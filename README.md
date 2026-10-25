@@ -2,6 +2,10 @@
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## UI
+
+The UI is built with [daisyUI 5](https://daisyui.com/components/) on [Tailwind CSS 4](https://tailwindcss.com/docs). Use daisyUI components and layouts first, Tailwind utilities for placement, and daisyUI theme colours (`primary`, `base-100`, …) instead of fixed colours. Themes are set in `app/assets/css/main.css`.
+
 ## Setup
 
 Make sure to install dependencies:

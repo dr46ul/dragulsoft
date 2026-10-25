@@ -1,3 +1,7 @@
+## UI
+
+Components, layouts, designs and prototypes all use daisyUI 5 on Tailwind CSS 4, with colours taken from daisyUI's semantic theme tokens. See `.agents/rules/daisyui.md`.
+
 ## Agent skills
 
 ### Issue tracker
