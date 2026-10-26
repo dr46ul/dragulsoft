@@ -36,7 +36,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
         <i data-edge="y" class="absolute inset-y-0 right-0 w-px origin-bottom bg-secondary/28" />
       </span>
 
-      <header class="mb-2 flex items-center gap-4 md:mb-3">
+      <div class="mb-2 flex items-center gap-4 md:mb-3">
         <p class="shrink-0 eyebrow text-[0.625rem] text-secondary">
           Stage 01<span class="text-base-content/45"> / 05</span>
           <span class="text-base-content md:hidden"> · {{ current }}</span>
@@ -54,7 +54,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
             </li>
           </ul>
         </div>
-      </header>
+      </div>
       <progress class="progress mb-3 h-px w-full progress-primary md:mb-4" value="0" max="100" />
 
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_10rem]">

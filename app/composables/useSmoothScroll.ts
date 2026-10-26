@@ -4,9 +4,6 @@ import Lenis from 'lenis'
 
 let lenis: Lenis | null = null
 
-// Offsets the target so in-page jumps clear the sticky navigation.
-const stickyOffset = 80
-
 export function scrollToY(top: number) {
   if (lenis) {
     lenis.scrollTo(top)
@@ -30,9 +27,10 @@ export function useSmoothScroll() {
     document.fonts?.ready.then(() => ScrollTrigger.refresh())
     if (prefersReducedMotion())
       return
+    // Lenis already subtracts the root's scroll-padding-top (5rem) from an anchor target, so an extra offset would land the section twice as far down.
     lenis = new Lenis({
       autoRaf: false,
-      anchors: { offset: -stickyOffset },
+      anchors: true,
     })
     lenis.on('scroll', ScrollTrigger.update)
     gsap.ticker.add(tick)

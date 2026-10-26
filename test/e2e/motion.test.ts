@@ -39,7 +39,7 @@ describe('motion on a visitor with no preference', () => {
       intro.textContent = 'Intro'
       document.body.append(intro)
     })
-    const intro = page.locator('[data-intro]')
+    const intro = page.locator('[data-intro]', { hasText: /^Intro$/ })
 
     await expect(intro.evaluate(element => getComputedStyle(element).visibility)).resolves.toBe('hidden')
     await expect.poll(() => intro.evaluate(element => getComputedStyle(element).visibility), { timeout: 5000 }).toBe('visible')
