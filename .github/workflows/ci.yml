@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        task: [lint, typecheck, build]
+        task: [lint, typecheck, build, test]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v6
@@ -28,4 +28,6 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - if: matrix.task == 'test'
+        run: pnpm exec playwright-core install --with-deps chromium
       - run: pnpm ${{ matrix.task }}

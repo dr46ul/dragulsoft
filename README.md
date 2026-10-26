@@ -63,6 +63,9 @@ The dev server runs at <http://localhost:3000>. `pnpm install` also generates Nu
 | `pnpm lint`      | Lint every file                                 |
 | `pnpm lint:fix`  | Lint and apply automatic fixes                  |
 | `pnpm typecheck` | Type-check the app with `vue-tsc`               |
+| `pnpm test`      | Run the unit, nuxt and e2e test projects once   |
+
+Run one project with `pnpm test:unit`, `pnpm test:nuxt` or `pnpm test:e2e`. The e2e project builds and serves the app itself, which takes about 15 seconds per file. To skip that, start `pnpm dev` and run `NUXT_TEST_HOST=http://localhost:3000 pnpm test:e2e`. The first e2e run needs a browser: `pnpm exec playwright-core install chromium`.
 
 ## Project structure
 
@@ -110,7 +113,7 @@ Coding rules live in [`.agents/rules/`](.agents/rules/) and apply to people and 
 
 Every pull request runs:
 
-- **CI:** `lint`, `typecheck` and `build`.
+- **CI:** `lint`, `typecheck`, `build` and `test`.
 - **Security:** CodeQL analysis, dependency review (fails on high-severity advisories), `pnpm audit` on production dependencies, and a Gitleaks secret scan.
 
 Dependabot opens weekly updates for npm packages and GitHub Actions. pnpm's supply-chain settings, including a no-downgrade trust policy, live in [`pnpm-workspace.yaml`](pnpm-workspace.yaml).
