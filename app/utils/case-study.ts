@@ -1,11 +1,6 @@
-// Titles match the Services section's cards.
-const DISCIPLINE_LABELS = {
-  'web-app': 'Web apps & SaaS',
-  'website': 'Websites & landing pages',
-  'ai-integration': 'AI integrations',
-}
+import { SERVICES } from '../data/services'
 
-export type Discipline = keyof typeof DISCIPLINE_LABELS
+export type Discipline = (typeof SERVICES)[number]['id']
 
 export interface CaseStudy {
   title: string
@@ -18,7 +13,7 @@ export interface CaseStudy {
 }
 
 export function disciplineLabel(discipline: Discipline) {
-  return DISCIPLINE_LABELS[discipline]
+  return SERVICES.find(service => service.id === discipline)?.title ?? discipline
 }
 
 export function clientLabel(client: string) {

@@ -1,47 +1,6 @@
 <script setup lang="ts">
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-const services = [
-  {
-    detail: 'A',
-    title: 'Web apps & SaaS',
-    promise: 'The product your business runs on.',
-    description: 'Customer portals, internal tools, dashboards and SaaS products, from the first usable version to the one that scales.',
-    scope: [
-      'Accounts, roles & billing',
-      'Dashboards & reporting',
-      'Integrations with your tools',
-      'Admin & back office',
-    ],
-    demo: 'board',
-  },
-  {
-    detail: 'B',
-    title: 'Websites & landing pages',
-    promise: 'Sites that load fast and sell clearly.',
-    description: 'Marketing sites and landing pages that are quick on any connection, easy for your team to edit, and easy to find.',
-    scope: [
-      'Content you edit yourself',
-      'Several languages',
-      'SEO & analytics',
-      'Forms that reach you',
-    ],
-    demo: 'page',
-  },
-  {
-    detail: 'C',
-    title: 'AI integrations',
-    promise: 'AI wired into the work you already do.',
-    description: 'Assistants, document search and automations connected to your own data and tools, with guardrails and costs kept in check.',
-    scope: [
-      'Assistants on your data',
-      'Document extraction',
-      'Workflow automation',
-      'Evaluation & guardrails',
-    ],
-    demo: 'flow',
-  },
-] as const
+import { SERVICES } from '~/data/services'
 
 const root = useTemplateRef<HTMLElement>('root')
 const playing = ref(false)
@@ -87,7 +46,7 @@ onBeforeUnmount(() => trigger?.kill())
       </div>
 
       <ul data-reveal="stagger" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6" :class="{ playing }">
-        <li v-for="service in services" :key="service.detail" class="card card-drawn">
+        <li v-for="service in SERVICES" :key="service.detail" class="card card-drawn">
           <div
             class="demo relative m-3 mb-0 h-40 overflow-hidden rounded-field border border-secondary/30 bg-base-100"
             aria-hidden="true"
