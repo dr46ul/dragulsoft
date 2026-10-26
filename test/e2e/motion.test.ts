@@ -6,6 +6,15 @@ import { setupApp } from './setup'
 await setupApp()
 
 const stickyOffset = 80
+const desktop = { width: 1440, height: 900 }
+
+function stageLabel(page: Page, stage: number) {
+  return page.getByText(`Stage 0${stage} / 05`)
+}
+
+function runningAnimations(page: Page, selector: string) {
+  return page.locator(selector).evaluateAll(elements => elements.flatMap(element => element.getAnimations()).length)
+}
 
 async function makeScrollable(page: Page) {
   await page.evaluate(() => {
@@ -62,7 +71,46 @@ describe('motion on a visitor with no preference', () => {
   })
 })
 
+describe('the launched product on a visitor with no preference', () => {
+  it('pings its live indicator', async () => {
+    const page = await createPage('/', { viewport: desktop, reducedMotion: 'no-preference' })
+    await stageLabel(page, 1).waitFor()
+
+    await page.getByRole('button', { name: 'Launch' }).click()
+    await stageLabel(page, 5).waitFor({ timeout: 10_000 })
+
+    await expect.poll(() => runningAnimations(page, '.status-success'), { timeout: 5000 }).toBeGreaterThan(0)
+    await page.close()
+  })
+})
+
 describe('motion on a visitor who prefers reduced motion', () => {
+  it('leaves the live indicator still once the product has launched', async () => {
+    const page = await createPage('/', { viewport: desktop, reducedMotion: 'reduce' })
+    await page.waitForLoadState('networkidle')
+
+    await page.getByRole('button', { name: 'Launch' }).click()
+    await stageLabel(page, 5).waitFor({ timeout: 5000 })
+
+    await expect(page.getByText('Live', { exact: true }).evaluate(element => getComputedStyle(element).opacity)).resolves.toBe('1')
+    expect(await runningAnimations(page, '.status-success')).toBe(0)
+    await page.close()
+  })
+
+  it('dims the hero and the other chapters the moment the story moves on, with no fade', async () => {
+    const page = await createPage('/', { viewport: desktop, reducedMotion: 'reduce' })
+    await page.waitForLoadState('networkidle')
+
+    await page.getByRole('button', { name: 'Spec' }).click()
+    await stageLabel(page, 2).waitFor({ timeout: 5000 })
+
+    const dimmed = '#top, [data-chapter]:not([data-stage="1"])'
+    expect(await runningAnimations(page, '#top, [data-chapter]')).toBe(0)
+    const opacities = await page.locator(dimmed).evaluateAll(elements => elements.map(element => getComputedStyle(element).opacity))
+    expect(opacities).toEqual(['0.3', '0.3', '0.3', '0.3'])
+    await page.close()
+  })
+
   it('leaves the root element without the motion and smooth-scroll classes', async () => {
     const page = await createPage('/', { reducedMotion: 'reduce' })
     await page.waitForLoadState('networkidle')

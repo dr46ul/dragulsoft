@@ -52,7 +52,7 @@ const kpis = computed(() => [
             </span>
             <span class="live inline-flex items-center gap-1.5 font-medium">
               <span class="inline-grid *:[grid-area:1/1]">
-                <span class="status status-success" :class="{ 'animate-ping [animation-play-state:var(--play-state,running)]': live }" />
+                <span class="status status-success" :class="{ 'motion-safe:animate-ping motion-safe:[animation-play-state:var(--play-state,running)]': live }" />
                 <span class="status status-success" />
               </span>
               Live

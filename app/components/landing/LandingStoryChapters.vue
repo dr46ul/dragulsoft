@@ -14,7 +14,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
       :key="chapter.stage"
       data-chapter
       :data-stage="index + 1"
-      class="flex min-h-[72svh] flex-col justify-start pt-2 pb-16 transition-opacity duration-500 lg:min-h-[calc(100svh-4rem)] lg:justify-center lg:py-12"
+      class="flex min-h-[72svh] flex-col justify-start pt-2 pb-16 transition-opacity duration-500 motion-reduce:transition-none lg:min-h-[calc(100svh-4rem)] lg:justify-center lg:py-12"
       :class="{ 'lg:opacity-30': ready && stage !== index + 1 }"
     >
       <p class="mb-5 flex items-center gap-3 eyebrow text-primary">

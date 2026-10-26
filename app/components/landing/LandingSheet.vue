@@ -19,11 +19,12 @@ const titleBlock = computed(() => titleBlockFor(stage.value, brand.name))
 const current = computed(() => STAGES[stage.value]?.label ?? 'Brief')
 
 // Orders keep trickling in once the example product is live, so the last frame reads as running software.
+// Reduced motion gets the settled figures: a counter that keeps changing is motion too.
 let arrivalTimer: ReturnType<typeof setInterval> | undefined
 watch(launched, (isLive) => {
   clearInterval(arrivalTimer)
   arrivals.value = 0
-  if (isLive) {
+  if (isLive && !prefersReducedMotion()) {
     arrivalTimer = setInterval(() => {
       if (!document.hidden)
         arrivals.value += 1 + Math.floor(Math.random() * 3)

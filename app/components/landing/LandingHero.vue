@@ -74,7 +74,7 @@ onBeforeUnmount(() => intro?.revert())
     class="relative mx-auto max-w-[90rem] px-4 md:px-8 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-14 xl:gap-x-16"
     aria-label="How a project runs"
   >
-    <div id="top" class="flex flex-col justify-center pt-12 pb-10 transition-opacity duration-500 lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16" :class="{ 'lg:opacity-30': ready && stage !== 0 }">
+    <div id="top" class="flex flex-col justify-center pt-12 pb-10 transition-opacity duration-500 motion-reduce:transition-none lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16" :class="{ 'lg:opacity-30': ready && stage !== 0 }">
       <p class="mb-6 flex items-center gap-3 eyebrow text-secondary">
         <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 01 · Web apps · Websites · AI integrations
       </p>

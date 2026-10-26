@@ -157,6 +157,7 @@ describe('the example product', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals()
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -182,6 +183,7 @@ describe('the example product', () => {
   })
 
   it('keeps orders trickling in once launched, and stops when scrolled back', async () => {
+    requestReducedMotion(false)
     vi.useFakeTimers()
     const story = useStory()
     await renderSuspended(LandingHero)
@@ -199,10 +201,37 @@ describe('the example product', () => {
   })
 
   it('does not add orders while the tab is in the background', async () => {
+    requestReducedMotion(false)
     vi.useFakeTimers()
     const story = useStory()
     await renderSuspended(LandingHero)
     vi.spyOn(document, 'hidden', 'get').mockReturnValue(true)
+
+    for (const index of [0, 1, 2, 3])
+      story.setLevel(index, 1)
+    await vi.advanceTimersByTimeAsync(2200 * 3)
+
+    expect(screen.getByText('1,284')).toBeTruthy()
+  })
+})
+
+describe('the example product under reduced motion', () => {
+  beforeEach(() => {
+    clearNuxtState()
+    requestReducedMotion(true)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
+
+  it('does not keep adding orders once launched', async () => {
+    vi.useFakeTimers()
+    const story = useStory()
+    await renderSuspended(LandingHero)
+    vi.spyOn(Math, 'random').mockReturnValue(0)
 
     for (const index of [0, 1, 2, 3])
       story.setLevel(index, 1)
