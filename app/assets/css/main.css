@@ -94,6 +94,15 @@
   text-transform: uppercase;
 }
 
+/* Hairline glyph outline with no fill; callers paint into the letters through background-clip. */
+@utility outlined-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-base-content) 85%, transparent);
+  background-clip: text;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
 /*
  * A daisyUI card drawn like a plate on a sheet: a chalk-line border plus yellow crop marks outside each corner.
  * daisyUI has no corner-marked surface; this is the candidate for a shared component.
