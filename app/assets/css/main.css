@@ -129,3 +129,14 @@
     border-color: var(--color-primary);
   }
 }
+
+/* Set from <head> before first paint, so intro elements start hidden instead of flashing; the delayed animation is the escape hatch if scripts never run. */
+.motion [data-intro] {
+  visibility: hidden;
+  animation: intro-failsafe 0s 3s forwards;
+}
+@keyframes intro-failsafe {
+  to {
+    visibility: visible;
+  }
+}

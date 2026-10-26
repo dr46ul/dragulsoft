@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/fonts', '@nuxt/icon', '@nuxt/test-utils/module'],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', 'lenis/dist/lenis.css'],
   app: {
     head: {
       htmlAttrs: { lang: 'en' },

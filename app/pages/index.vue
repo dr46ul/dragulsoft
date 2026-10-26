@@ -9,6 +9,19 @@ useSeoMeta({
   ogDescription: description,
   ogType: 'website',
 })
+
+// Runs before first paint so intro elements can start hidden without a flash; reduced-motion visitors never get the class.
+useHead({
+  script: [
+    {
+      key: 'motion',
+      tagPosition: 'head',
+      innerHTML: 'matchMedia("(prefers-reduced-motion: no-preference)").matches&&document.documentElement.classList.add("motion")',
+    },
+  ],
+})
+
+useSmoothScroll()
 </script>
 
 <template>
