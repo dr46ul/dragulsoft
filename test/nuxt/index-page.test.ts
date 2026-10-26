@@ -10,6 +10,13 @@ describe('index page', () => {
     expect(screen.getByRole('main').id).toBe('main')
   })
 
+  it('closes with the footer, outside the main landmark', async () => {
+    await renderSuspended(IndexPage)
+
+    const footer = screen.getByRole('contentinfo')
+    expect(screen.getByRole('main').contains(footer)).toBe(false)
+  })
+
   it('offers a skip link to the main landmark as the first link', async () => {
     await renderSuspended(IndexPage)
 
