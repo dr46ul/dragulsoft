@@ -2,7 +2,7 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import userEvent from '@testing-library/user-event'
 import { screen, within } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearNuxtState } from '#imports'
+import { clearNuxtState, useError } from '#imports'
 import LandingHero from '~/components/landing/LandingHero.vue'
 import { useEnquiry } from '~/composables/useEnquiry'
 import { useStory } from '~/composables/useStory'
@@ -259,7 +259,13 @@ describe('the headline while the story moves', () => {
     expect(words.length).toBeGreaterThan(0)
 
     story.setLevel(0, 1)
-    await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Spec' }).getAttribute('aria-current')).toBe('step'))
+    try {
+      await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Spec' }).getAttribute('aria-current')).toBe('step'), { timeout: 2000 })
+    }
+    catch (e) {
+      const err = useError().value
+      throw new Error(`DIAG error=${JSON.stringify({ status: err?.status, msg: err?.message, stack: String(err?.stack ?? err?.cause).slice(0, 1500), cause: String((err as any)?.cause?.stack ?? '').slice(0, 1500) })} :: ${(e as Error).message.slice(0, 200)}`)
+    }
 
     expect(Array.from(heading.children)).toEqual(words)
   })
