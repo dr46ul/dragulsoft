@@ -1,14 +1,19 @@
 import { renderSuspended } from '@nuxt/test-utils/runtime'
 import userEvent from '@testing-library/user-event'
-import { screen } from '@testing-library/vue'
+import { screen, within } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearNuxtState, useAppConfig } from '#imports'
 import LandingHero from '~/components/landing/LandingHero.vue'
 import { useEnquiry } from '~/composables/useEnquiry'
 
+// The story's scroll wiring listens for media changes, which a bare `{ matches }` stand-in can't do.
 function requestReducedMotion(reduce: boolean) {
   vi.stubGlobal('matchMedia', (query: string) => ({
     matches: reduce && query === '(prefers-reduced-motion: reduce)',
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
   }))
 }
 
@@ -59,7 +64,10 @@ describe('hero', () => {
     await renderSuspended(LandingHero)
 
     const rows = Object.fromEntries(
-      Array.from(document.querySelectorAll('tr'), row => [row.querySelector('th')?.textContent, row.querySelector('td')?.textContent]),
+      Array.from(document.querySelectorAll('[aria-label="Title block"] tr'), row => [
+        row.querySelector('th')?.textContent,
+        row.querySelector('td')?.textContent.trim(),
+      ]),
     )
     expect(rows).toEqual({
       'Project': 'Order desk',
@@ -78,11 +86,18 @@ describe('hero', () => {
     expect(figure.textContent).toContain('An order dashboard with an AI assistant, drawn at the Brief stage.')
   })
 
-  it('keeps the drawing out of the accessibility tree', async () => {
+  it('keeps the drawing out of the accessibility tree, leaving the stage steps as its only controls', async () => {
     await renderSuspended(LandingHero)
 
     expect(screen.queryByRole('table')).toBeNull()
-    expect(screen.queryByRole('list')).toBeNull()
+    const figure = screen.getByRole('figure', { name: 'Example product · not a client project' })
+    expect(within(figure).getAllByRole('button').map(button => button.textContent.trim())).toEqual([
+      'Brief',
+      'Spec',
+      'Design',
+      'Build',
+      'Launch',
+    ])
   })
 
   it('still announces the headline as one sentence once the intro has split it into words', async () => {

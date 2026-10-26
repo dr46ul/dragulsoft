@@ -11,15 +11,9 @@ const stickyTop = 64
 // A regular expression, because the blinking caret is a child of the quote.
 const whole = /Every order lives in three spreadsheets\. We need one place to see them, and to just ask it questions\./
 
-// Stands in for the chapters the scroll story adds below the hero, so there is something to scroll past.
-async function addStoryStandIn(page: Page) {
-  await page.evaluate(() => {
-    const standIn = document.createElement('div')
-    standIn.style.height = '3000px'
-    standIn.style.gridColumn = '1'
-    standIn.style.gridRow = '2'
-    document.querySelector('#process')?.append(standIn)
-  })
+// The mock product's navigation panel also says "Order desk", so the title block is picked out by its row.
+function titleBlockProject(page: Page) {
+  return page.locator('tr:has(th:text-is("Project")) td')
 }
 
 function sheetBand(page: Page) {
@@ -57,7 +51,6 @@ describe('hero at 1440 wide', () => {
 
   it('keeps the sheet pinned 64px from the top while the page scrolls', async () => {
     const page = await createPage('/', { viewport: desktop, reducedMotion: 'reduce' })
-    await addStoryStandIn(page)
 
     await page.evaluate(() => window.scrollTo(0, 600))
 
@@ -78,7 +71,7 @@ describe('hero at 1440 wide', () => {
   it('shows the title block', async () => {
     const page = await createPage('/', { viewport: desktop, reducedMotion: 'reduce' })
 
-    expect(await page.getByText('Order desk').isVisible()).toBe(true)
+    expect(await titleBlockProject(page).isVisible()).toBe(true)
     await page.close()
   })
 })
@@ -93,7 +86,7 @@ describe('title block width', () => {
       reducedMotion: 'reduce',
     })
 
-    expect(await page.getByText('Order desk').isVisible()).toBe(visible)
+    expect(await titleBlockProject(page).isVisible()).toBe(visible)
     await page.close()
   })
 })
@@ -114,7 +107,6 @@ describe('hero at 390 wide', () => {
 
   it('pins the sheet band 64px from the top once the hero has scrolled past', async () => {
     const page = await createPage('/', { viewport: phone, reducedMotion: 'reduce' })
-    await addStoryStandIn(page)
 
     await page.evaluate(() => window.scrollTo(0, 1200))
 

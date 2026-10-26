@@ -10,6 +10,13 @@ const brief = 'Every order lives in three spreadsheets. We need one place to see
 const root = useTemplateRef<HTMLElement>('root')
 const headline = useTemplateRef<HTMLElement>('headline')
 const underline = useTemplateRef<HTMLElement>('underline')
+const cue = useTemplateRef<HTMLElement>('cue')
+
+const { ready, stage } = useStory()
+const cueOnscreen = useOnscreen(cue)
+
+useReveal(root)
+useStoryScroll(root)
 
 // Server-rendered and reduced-motion visitors get the whole brief; the intro empties it just before it types it out.
 const typed = ref(brief)
@@ -67,7 +74,7 @@ onBeforeUnmount(() => intro?.revert())
     class="relative mx-auto max-w-[90rem] px-4 md:px-8 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-14 xl:gap-x-16"
     aria-label="How a project runs"
   >
-    <div id="top" class="flex flex-col justify-center pt-12 pb-10 lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16">
+    <div id="top" class="flex flex-col justify-center pt-12 pb-10 transition-opacity duration-500 lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16" :class="{ 'lg:opacity-30': ready && stage !== 0 }">
       <p class="mb-6 flex items-center gap-3 eyebrow text-secondary">
         <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 01 · Web apps · Websites · AI integrations
       </p>
@@ -77,20 +84,25 @@ onBeforeUnmount(() => intro?.revert())
       <p data-intro="lede" class="mt-7 max-w-xl text-lg text-pretty text-base-content/80 md:text-xl">
         {{ brand.name }} is an independent software practice building web apps, websites and AI integrations for businesses in any market, with one accountable lead from first sketch to launch.
       </p>
-      <div v-if="enquiry.available.value" class="mt-9">
-        <button class="btn btn-lg btn-primary" @click="enquiry.start('hero')">
+      <div class="mt-9 flex flex-wrap items-center gap-3">
+        <button v-if="enquiry.available.value" class="btn btn-lg btn-primary" @click="enquiry.start('hero')">
           Start a project
           <Icon name="solar:arrow-right-linear" class="size-5" />
         </button>
+        <button class="btn btn-ghost btn-lg" @click="goToStage(1)">
+          See how a project runs
+        </button>
       </div>
       <p class="mt-14 hidden items-center gap-4 eyebrow text-base-content/55 lg:flex" aria-hidden="true">
-        <span class="scroll-cue" />Scroll · the drawing builds itself
+        <span ref="cue" class="scroll-cue" :class="{ paused: stage > 0 || !cueOnscreen }" />Scroll · the drawing builds itself
       </p>
     </div>
 
-    <div class="sticky top-16 z-20 -mx-4 border-b border-secondary/25 bg-drafting px-4 py-3 md:-mx-8 md:px-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:flex lg:h-[calc(100svh-4rem)] lg:items-center lg:self-start lg:border-0 lg:bg-transparent lg:bg-none lg:px-0 lg:py-6">
+    <div data-story-band class="sticky top-16 z-20 -mx-4 border-b border-secondary/25 bg-drafting px-4 py-3 md:-mx-8 md:px-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:flex lg:h-[calc(100svh-4rem)] lg:items-center lg:self-start lg:border-0 lg:bg-transparent lg:bg-none lg:px-0 lg:py-6">
       <LandingSheet data-intro="sheet" :brief="typed" />
     </div>
+
+    <LandingStoryChapters />
   </section>
 </template>
 
@@ -116,6 +128,9 @@ onBeforeUnmount(() => intro?.revert())
   height: 40%;
   background-color: var(--color-primary);
   animation: cue 1.8s var(--ease-draft) infinite;
+}
+.scroll-cue.paused::after {
+  animation-play-state: paused;
 }
 @keyframes cue {
   from {
