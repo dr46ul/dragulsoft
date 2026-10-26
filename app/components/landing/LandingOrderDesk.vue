@@ -26,7 +26,9 @@ const kpis = computed(() => [
       <span class="wire">Browser · 1280</span><span class="surface" />
       <div class="skin flex items-center gap-2 px-2 py-1">
         <span class="flex gap-1"><i class="dot" /><i class="dot" /><i class="dot" /></span>
-        <span class="flex-1 truncate rounded-field bg-base-200 px-2 py-0.5 font-label text-[0.55rem] text-base-content/60">orders.example.com</span>
+        <span class="flex-1 truncate rounded-field bg-base-200 px-2 py-0.5 font-label text-[0.55rem] text-base-content/60">
+          orders.example.com
+        </span>
       </div>
     </div>
 
@@ -34,7 +36,9 @@ const kpis = computed(() => [
       <div class="blk hidden @lg:block" style="--i: 1">
         <span class="wire">Navigation</span><span class="surface" />
         <div class="skin flex h-full flex-col gap-0.5 p-2">
-          <span class="mb-1.5 flex items-center gap-1.5 font-semibold"><span class="size-2.5 rounded-[2px] bg-primary" />Order desk</span>
+          <span class="mb-1.5 flex items-center gap-1.5 font-semibold">
+            <span class="size-2.5 rounded-[2px] bg-primary" />Order desk
+          </span>
           <span class="rounded-field bg-base-200 px-1.5 py-1">Overview</span>
           <span class="px-1.5 py-1 text-base-content/60">Orders</span>
           <span class="px-1.5 py-1 text-base-content/60">Customers</span>
@@ -52,7 +56,10 @@ const kpis = computed(() => [
             </span>
             <span class="live inline-flex items-center gap-1.5 font-medium">
               <span class="inline-grid *:[grid-area:1/1]">
-                <span class="status status-success" :class="{ 'motion-safe:animate-ping motion-safe:[animation-play-state:var(--play-state,running)]': live }" />
+                <span
+                  :class="{ 'motion-safe:animate-ping motion-safe:[animation-play-state:var(--play-state,running)]': live }"
+                  class="status status-success"
+                />
                 <span class="status status-success" />
               </span>
               Live
@@ -61,7 +68,7 @@ const kpis = computed(() => [
         </div>
 
         <div class="grid grid-cols-3 gap-1.5 @md:gap-2">
-          <div v-for="(kpi, index) in kpis" :key="kpi.label" class="blk" :style="{ '--i': 3 + index }">
+          <div v-for="(kpi, index) in kpis" :key="kpi.label" :style="{ '--i': 3 + index }" class="blk">
             <span class="wire">Figure</span><span class="surface" />
             <span v-if="index === 0" class="callout">2</span>
             <div class="skin p-1.5 @md:p-2">
@@ -86,8 +93,18 @@ const kpis = computed(() => [
                 <g class="stroke-base-content/15" stroke-width="1" vector-effect="non-scaling-stroke">
                   <line x1="0" y1="16" x2="200" y2="16" /><line x1="0" y1="32" x2="200" y2="32" /><line x1="0" y1="48" x2="200" y2="48" />
                 </g>
-                <path class="area fill-primary/15" d="M0 54 L33 46 L66 50 L100 34 L133 38 L166 18 L200 10 L200 64 L0 64 Z" />
-                <path class="trend stroke-primary" fill="none" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M0 54 L33 46 L66 50 L100 34 L133 38 L166 18 L200 10" />
+                <path
+                  class="area fill-primary/15"
+                  d="M0 54 L33 46 L66 50 L100 34 L133 38 L166 18 L200 10 L200 64 L0 64 Z"
+                />
+                <path
+                  class="trend stroke-primary"
+                  fill="none"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                  d="M0 54 L33 46 L66 50 L100 34 L133 38 L166 18 L200 10"
+                />
               </svg>
             </div>
           </div>
@@ -97,7 +114,9 @@ const kpis = computed(() => [
             <div class="skin flex flex-col gap-1 p-1.5 @md:p-2">
               <p class="flex items-center justify-between font-medium">
                 Assistant
-                <span class="badge badge-outline badge-xs border-secondary/50 font-label text-[0.5rem] text-secondary">AI</span>
+                <span class="badge badge-outline badge-xs border-secondary/50 font-label text-[0.5rem] text-secondary">
+                  AI
+                </span>
               </p>
               <div class="chat-end chat p-0">
                 <div class="chat-bubble min-h-0 chat-bubble-primary px-2 py-1 text-[length:inherit]">
@@ -133,7 +152,13 @@ const kpis = computed(() => [
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(order, index) in ORDERS" :key="order.id" class="row" :class="{ 'hidden @xs:table-row': index === 3 }" :style="{ '--j': index }">
+                <tr
+                  v-for="(order, index) in ORDERS"
+                  :key="order.id"
+                  :class="{ 'hidden @xs:table-row': index === 3 }"
+                  :style="{ '--j': index }"
+                  class="row"
+                >
                   <td class="font-label">
                     #{{ order.id }}
                   </td>
@@ -145,7 +170,9 @@ const kpis = computed(() => [
                     {{ order.total }}
                   </td>
                   <td>
-                    <span class="badge badge-xs" :class="order.paid ? 'badge-success' : 'badge-warning'">{{ order.paid ? 'Paid' : 'Pending' }}</span>
+                    <span :class="order.paid ? 'badge-success' : 'badge-warning'" class="badge badge-xs">
+                      {{ order.paid ? 'Paid' : 'Pending' }}
+                    </span>
                   </td>
                 </tr>
               </tbody>

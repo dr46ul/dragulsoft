@@ -39,7 +39,6 @@ const pad = (value: number) => String(value).padStart(2, '0')
 <template>
   <figure
     ref="sheet"
-    class="sheet relative w-full card-drawn rounded-box p-3 md:p-5"
     :style="{
       '--p1': levels[0],
       '--p2': levels[1],
@@ -47,6 +46,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
       '--p4': levels[3],
       '--play-state': onscreen ? 'running' : 'paused',
     }"
+    class="sheet relative w-full card-drawn rounded-box p-3 md:p-5"
     aria-labelledby="sheet-caption"
     aria-describedby="sheet-description"
   >
@@ -68,14 +68,14 @@ const pad = (value: number) => String(value).padStart(2, '0')
           <li
             v-for="(item, index) in STAGES"
             :key="item.label"
-            class="step min-w-0 text-[0.6rem] before:h-px! after:size-6! after:font-label after:text-[0.55rem]"
             :class="{ 'step-primary': index <= stage }"
             :data-content="pad(index + 1)"
+            class="step min-w-0 text-[0.6rem] before:h-px! after:size-6! after:font-label after:text-[0.55rem]"
           >
             <button
+              :aria-current="index === stage ? 'step' : undefined"
               type="button"
               class="cursor-pointer rounded-field px-1 eyebrow text-[0.575rem] tracking-[0.14em] hover:text-primary"
-              :aria-current="index === stage ? 'step' : undefined"
               @click="goToStage(index)"
             >
               {{ item.label }}
@@ -86,7 +86,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
     </div>
 
     <div aria-hidden="true">
-      <progress class="progress mb-3 h-px w-full progress-primary md:mb-4" :value="progress * 100" max="100" />
+      <progress :value="progress * 100" class="progress mb-3 h-px w-full progress-primary md:mb-4" max="100" />
 
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_10rem]">
         <div class="relative min-h-44 overflow-clip pt-2 pb-6 pl-2 md:min-h-0 md:aspect-4/3 md:pt-5 md:pl-5 xl:aspect-11/10">
@@ -142,11 +142,16 @@ const pad = (value: number) => String(value).padStart(2, '0')
 
     <figcaption class="mt-2 flex justify-between gap-4 eyebrow text-[0.575rem] text-base-content/50 md:mt-3">
       <span id="sheet-caption">Example product · not a client project</span>
-      <span id="sheet-description" class="sr-only">An order dashboard with an AI assistant, drawn at the {{ current }} stage.</span>
+      <span id="sheet-description" class="sr-only">
+        An order dashboard with an AI assistant, drawn at the {{ current }} stage.
+      </span>
     </figcaption>
 
     <!-- Sits in the caption strip, and scales from its bottom-right corner so the hidden, enlarged stamp never overflows the page sideways. -->
-    <p class="stamp pointer-events-none absolute right-4 bottom-10 z-10 border-2 border-accent bg-base-200 px-2 py-0.5 font-label text-[0.6rem] font-medium tracking-[0.18em] text-accent uppercase md:right-6 md:bottom-3" aria-hidden="true">
+    <p
+      class="stamp pointer-events-none absolute right-4 bottom-10 z-10 border-2 border-accent bg-base-200 px-2 py-0.5 font-label text-[0.6rem] font-medium tracking-[0.18em] text-accent uppercase md:right-6 md:bottom-3"
+      aria-hidden="true"
+    >
       Issued for production · v1.0
     </p>
   </figure>

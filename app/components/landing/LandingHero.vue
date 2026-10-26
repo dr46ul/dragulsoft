@@ -74,11 +74,19 @@ onBeforeUnmount(() => intro?.revert())
     class="relative mx-auto max-w-[90rem] px-4 md:px-8 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-14 xl:gap-x-16"
     aria-label="How a project runs"
   >
-    <div id="top" class="flex flex-col justify-center pt-12 pb-10 transition-opacity duration-500 motion-reduce:transition-none lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16" :class="{ 'lg:opacity-30': ready && stage !== 0 }">
+    <div
+      id="top"
+      :class="{ 'lg:opacity-30': ready && stage !== 0 }"
+      class="flex flex-col justify-center pt-12 pb-10 transition-opacity duration-500 motion-reduce:transition-none lg:col-start-1 lg:row-start-1 lg:min-h-[calc(100svh-4rem)] lg:py-16"
+    >
       <p class="mb-6 flex items-center gap-3 eyebrow text-secondary">
         <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 01 · Web apps · Websites · AI integrations
       </p>
-      <h1 ref="headline" data-intro class="font-display text-[clamp(2.75rem,5.2vw,5.25rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance">
+      <h1
+        ref="headline"
+        data-intro
+        class="font-display text-[clamp(2.75rem,5.2vw,5.25rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance"
+      >
         Software, drawn up properly and <span ref="underline" class="underline-band">built to ship.</span>
       </h1>
       <p data-intro="lede" class="mt-7 max-w-xl text-lg text-pretty text-base-content/80 md:text-xl">
@@ -94,12 +102,15 @@ onBeforeUnmount(() => intro?.revert())
         </button>
       </div>
       <p class="mt-14 hidden items-center gap-4 eyebrow text-base-content/55 lg:flex" aria-hidden="true">
-        <span ref="cue" class="scroll-cue" :class="{ paused: stage > 0 || !cueOnscreen }" />Scroll · the drawing builds itself
+        <span ref="cue" :class="{ paused: stage > 0 || !cueOnscreen }" class="scroll-cue" />Scroll · the drawing builds itself
       </p>
     </div>
 
-    <div data-story-band class="sticky top-16 z-20 -mx-4 border-b border-secondary/25 bg-drafting px-4 py-3 md:-mx-8 md:px-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:flex lg:h-[calc(100svh-4rem)] lg:items-center lg:self-start lg:border-0 lg:bg-transparent lg:bg-none lg:px-0 lg:py-6">
-      <LandingSheet data-intro="sheet" :brief="typed" />
+    <div
+      data-story-band
+      class="sticky top-16 z-20 -mx-4 border-b border-secondary/25 bg-drafting px-4 py-3 md:-mx-8 md:px-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mx-0 lg:flex lg:h-[calc(100svh-4rem)] lg:items-center lg:self-start lg:border-0 lg:bg-transparent lg:bg-none lg:px-0 lg:py-6"
+    >
+      <LandingSheet :brief="typed" data-intro="sheet" />
     </div>
 
     <LandingStoryChapters />

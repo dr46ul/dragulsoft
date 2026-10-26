@@ -1,5 +1,13 @@
 <template>
-  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" class="brand-mark" aria-hidden="true">
+  <svg
+    viewBox="0 0 40 40"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    class="brand-mark"
+    aria-hidden="true"
+  >
     <line x1="2" y1="34" x2="38" y2="34" stroke-width="1" stroke-dasharray="1.5 2.5" class="opacity-45" />
     <line x1="27" y1="2" x2="27" y2="38" stroke-width="1" stroke-dasharray="1.5 2.5" class="opacity-45" />
     <circle cx="17" cy="24" r="10" pathLength="1" class="stroke" style="--d: 0.15s" />

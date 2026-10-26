@@ -23,8 +23,8 @@ useReveal(root)
       </div>
 
       <div
-        class="footer mt-16 grid-flow-row gap-px overflow-hidden rounded-box border border-secondary/45 bg-secondary/45 sm:grid-cols-2"
         :class="available ? 'lg:grid-cols-[2fr_1.3fr_1.5fr_1fr]' : 'lg:grid-cols-[2fr_1.5fr_1fr]'"
+        class="footer mt-16 grid-flow-row gap-px overflow-hidden rounded-box border border-secondary/45 bg-secondary/45 sm:grid-cols-2"
       >
         <div class="flex size-full flex-col gap-2 bg-base-100 px-6 py-5">
           <p class="eyebrow text-secondary">
@@ -56,8 +56,8 @@ useReveal(root)
           </ul>
         </div>
         <div
-          class="flex size-full flex-col gap-2 bg-base-100 px-6 py-5"
           :class="!available && 'sm:col-span-2 lg:col-span-1'"
+          class="flex size-full flex-col gap-2 bg-base-100 px-6 py-5"
         >
           <p class="eyebrow text-secondary">
             Sheet

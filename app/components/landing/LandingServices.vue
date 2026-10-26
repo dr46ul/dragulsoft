@@ -45,7 +45,7 @@ onBeforeUnmount(() => trigger?.kill())
         </p>
       </div>
 
-      <ul data-reveal="stagger" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6" :class="{ playing }">
+      <ul :class="{ playing }" data-reveal="stagger" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
         <li v-for="service in SERVICES" :key="service.detail" class="card card-drawn">
           <div
             class="demo relative m-3 mb-0 h-40 overflow-hidden rounded-field border border-secondary/30 bg-base-100"
@@ -89,12 +89,12 @@ onBeforeUnmount(() => trigger?.kill())
               <span
                 v-for="(node, n) in ['Email in', 'AI drafts reply', 'Ticket filed']"
                 :key="node"
-                class="node relative z-10 mx-auto grid place-items-center gap-1.5 text-center"
                 :style="{ '--n': n }"
+                class="node relative z-10 mx-auto grid place-items-center gap-1.5 text-center"
               >
                 <span
-                  class="grid size-9 place-items-center border border-secondary/60 bg-base-100 font-label text-[0.6rem]"
                   :class="n === 1 ? 'rotate-45' : 'rounded-full'"
+                  class="grid size-9 place-items-center border border-secondary/60 bg-base-100 font-label text-[0.6rem]"
                 >
                   <span :class="{ '-rotate-45': n === 1 }">{{ n + 1 }}</span>
                 </span>

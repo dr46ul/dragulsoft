@@ -35,7 +35,7 @@ function closeMenu() {
 <template>
   <header class="navbar sticky top-0 z-50 min-h-16 border-b border-secondary/25 bg-base-100/85 px-4 backdrop-blur-md md:px-8">
     <div class="navbar-start">
-      <a href="#top" class="flex items-center gap-3 rounded-field" :aria-label="`${brand.name}, back to top`">
+      <a :aria-label="`${brand.name}, back to top`" href="#top" class="flex items-center gap-3 rounded-field">
         <BrandMark class="size-9 text-base-content" />
         <span class="leading-none">
           <span class="block font-display text-[1.05rem] font-extrabold tracking-[0.08em] uppercase">
