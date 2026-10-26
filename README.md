@@ -2,7 +2,7 @@
 
 # dragulsoft
 
-The website for dragulsoft, a software studio.
+The website for Dragulsoft, an independent software practice building web apps, websites and AI integrations.
 
 [![CI](https://github.com/dr46ul/dragulsoft/actions/workflows/ci.yml/badge.svg)](https://github.com/dr46ul/dragulsoft/actions/workflows/ci.yml)
 [![Security](https://github.com/dr46ul/dragulsoft/actions/workflows/security.yml/badge.svg)](https://github.com/dr46ul/dragulsoft/actions/workflows/security.yml)
