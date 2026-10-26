@@ -17,7 +17,9 @@ useReveal(root)
           {{ brand.name }}
         </p>
         <span class="absolute inset-x-0 bottom-0 border-t border-dashed border-secondary/40" />
-        <span class="absolute right-0 -bottom-6 font-label text-[0.55rem] tracking-[0.2em] text-secondary uppercase">Wordmark · cap height to baseline</span>
+        <span class="absolute right-0 -bottom-6 font-label text-[0.55rem] tracking-[0.2em] text-secondary uppercase">
+          Wordmark · cap height to baseline
+        </span>
       </div>
 
       <div
@@ -53,7 +55,10 @@ useReveal(root)
             <li><a href="#services" class="link link-hover">AI integrations</a></li>
           </ul>
         </div>
-        <div class="flex size-full flex-col gap-2 bg-base-100 px-6 py-5" :class="!available && 'sm:col-span-2 lg:col-span-1'">
+        <div
+          class="flex size-full flex-col gap-2 bg-base-100 px-6 py-5"
+          :class="!available && 'sm:col-span-2 lg:col-span-1'"
+        >
           <p class="eyebrow text-secondary">
             Sheet
           </p>

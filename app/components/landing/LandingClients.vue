@@ -37,7 +37,11 @@ useReveal(root)
         <p class="mb-5 flex items-center gap-3 eyebrow text-secondary">
           <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 03 · Who it’s for
         </p>
-        <h2 id="clients-title" data-reveal="words" class="font-display text-[clamp(2.25rem,4.4vw,4rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance">
+        <h2
+          id="clients-title"
+          data-reveal="words"
+          class="font-display text-[clamp(2.25rem,4.4vw,4rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance"
+        >
           Different markets. Same drawing board.
         </h2>
         <p data-reveal="rise" class="mt-6 max-w-md text-lg text-pretty text-base-content/75">
@@ -50,8 +54,15 @@ useReveal(root)
           <span>Schedule of clients</span><span>Ref.</span>
         </p>
         <ul data-reveal="stagger" class="border-t border-secondary/40">
-          <li v-for="client in clients" :key="client.ref" class="group relative grid gap-3 border-b border-secondary/40 py-7 transition-colors duration-300 hover:bg-base-200/60 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 md:px-4">
-            <span class="absolute top-0 left-0 h-0.5 w-0 bg-primary transition-[width] duration-500 ease-settle group-hover:w-full" aria-hidden="true" />
+          <li
+            v-for="client in clients"
+            :key="client.ref"
+            class="group relative grid gap-3 border-b border-secondary/40 py-7 transition-colors duration-300 hover:bg-base-200/60 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 md:px-4"
+          >
+            <span
+              class="absolute top-0 left-0 h-0.5 w-0 bg-primary transition-[width] duration-500 ease-settle group-hover:w-full"
+              aria-hidden="true"
+            />
             <div>
               <h3 class="font-display text-2xl font-bold tracking-tight md:text-3xl">
                 {{ client.who }}
@@ -60,12 +71,18 @@ useReveal(root)
                 {{ client.copy }}
               </p>
               <ul class="mt-4 flex flex-wrap gap-2" aria-label="Typical work">
-                <li v-for="tag in client.tags" :key="tag" class="badge badge-outline badge-sm border-secondary/50 font-label text-[0.6rem] text-secondary">
+                <li
+                  v-for="tag in client.tags"
+                  :key="tag"
+                  class="badge badge-outline badge-sm border-secondary/50 font-label text-[0.6rem] text-secondary"
+                >
                   {{ tag }}
                 </li>
               </ul>
             </div>
-            <span class="order-first font-label text-sm text-base-content/50 transition-colors group-hover:text-primary md:order-none">{{ client.ref }}</span>
+            <span class="order-first font-label text-sm text-base-content/50 transition-colors group-hover:text-primary md:order-none">
+              {{ client.ref }}
+            </span>
           </li>
         </ul>
       </div>
