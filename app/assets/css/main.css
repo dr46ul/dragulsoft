@@ -1,3 +1,142 @@
 /*! daisyUI | MIT License | Copyright (c) 2020 Pouya Saadeghi | https://github.com/saadeghi/daisyui/blob/master/LICENSE */
 @import 'tailwindcss';
-@plugin 'daisyui';
+@plugin 'daisyui' {
+  themes: false;
+}
+
+/* Drafting blue, chalk-cyan linework, highlighter yellow for actions, red pencil kept for revision marks. */
+@plugin 'daisyui/theme' {
+  name: 'dragulsoft';
+  default: true;
+  color-scheme: dark;
+  --color-base-100: oklch(31% 0.09 258);
+  --color-base-200: oklch(27% 0.085 258);
+  --color-base-300: oklch(38% 0.09 257);
+  --color-base-content: oklch(95% 0.02 240);
+  --color-primary: oklch(88% 0.16 95);
+  --color-primary-content: oklch(26% 0.08 258);
+  --color-secondary: oklch(83% 0.08 225);
+  --color-secondary-content: oklch(26% 0.08 258);
+  --color-accent: oklch(72% 0.16 32);
+  --color-accent-content: oklch(98% 0.01 32);
+  --color-neutral: oklch(22% 0.075 258);
+  --color-neutral-content: oklch(92% 0.02 240);
+  --color-info: oklch(83% 0.08 225);
+  --color-info-content: oklch(26% 0.08 258);
+  --color-success: oklch(82% 0.14 160);
+  --color-success-content: oklch(26% 0.08 258);
+  --color-warning: oklch(88% 0.16 95);
+  --color-warning-content: oklch(26% 0.08 258);
+  --color-error: oklch(72% 0.16 32);
+  --color-error-content: oklch(98% 0.01 32);
+  --radius-selector: 0.125rem;
+  --radius-field: 0.125rem;
+  --radius-box: 0.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+  --brand-display: 'Schibsted Grotesk';
+  --brand-body: 'Schibsted Grotesk';
+  --brand-label: 'JetBrains Mono';
+}
+
+/* Fallbacks live here, not in the theme: the daisyUI theme plugin splits a comma list into separate declarations. */
+@theme inline {
+  --font-sans: var(--brand-body), ui-sans-serif, sans-serif;
+  --font-display: var(--brand-display), ui-sans-serif, sans-serif;
+  --font-label: var(--brand-label), ui-monospace, monospace;
+  --ease-draft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--color-primary-content);
+  }
+}
+
+/* Drafting film: a 16px minor grid inside a 96px major one. */
+@utility bg-drafting {
+  --minor: color-mix(in oklab, var(--color-base-content) 6%, transparent);
+  --major: color-mix(in oklab, var(--color-base-content) 11%, transparent);
+  background-color: var(--color-base-100);
+  background-image:
+    linear-gradient(var(--major) 1px, transparent 1px), linear-gradient(90deg, var(--major) 1px, transparent 1px),
+    linear-gradient(var(--minor) 1px, transparent 1px), linear-gradient(90deg, var(--minor) 1px, transparent 1px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    16px 16px,
+    16px 16px;
+  background-position: -1px -1px;
+}
+
+/* Mono caption used for sheet numbers, callouts and title-block labels. */
+@utility eyebrow {
+  font-family: var(--font-label);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/*
+ * A daisyUI card drawn like a plate on a sheet: a chalk-line border plus yellow crop marks outside each corner.
+ * daisyUI has no corner-marked surface; this is the candidate for a shared component.
+ */
+@utility card-drawn {
+  --mark: 0.875rem;
+  position: relative;
+  border: 1.5px solid color-mix(in oklab, var(--color-secondary) 55%, transparent);
+  background-color: color-mix(in oklab, var(--color-base-200) 78%, transparent);
+  transition: border-color 0.3s var(--ease-settle);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -0.4375rem;
+    pointer-events: none;
+    --c: var(--color-primary);
+    background:
+      linear-gradient(var(--c) 0 0) left top / var(--mark) 2px,
+      linear-gradient(var(--c) 0 0) left top / 2px var(--mark),
+      linear-gradient(var(--c) 0 0) right top / var(--mark) 2px,
+      linear-gradient(var(--c) 0 0) right top / 2px var(--mark),
+      linear-gradient(var(--c) 0 0) left bottom / var(--mark) 2px,
+      linear-gradient(var(--c) 0 0) left bottom / 2px var(--mark),
+      linear-gradient(var(--c) 0 0) right bottom / var(--mark) 2px,
+      linear-gradient(var(--c) 0 0) right bottom / 2px var(--mark);
+    background-repeat: no-repeat;
+    transition: background-size 0.35s var(--ease-settle);
+  }
+
+  &:is(:hover, :focus-within) {
+    --mark: 1.5rem;
+    border-color: var(--color-primary);
+  }
+}
+
+/* Set from <head> before first paint, so intro elements start hidden instead of flashing; the delayed animation is the escape hatch if scripts never run. */
+.motion [data-intro] {
+  visibility: hidden;
+  animation: intro-failsafe 0s 3s forwards;
+}
+@keyframes intro-failsafe {
+  to {
+    visibility: visible;
+  }
+}
