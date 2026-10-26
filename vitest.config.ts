@@ -19,6 +19,8 @@ export default defineConfig({
           environment: 'nuxt',
           // Testing Library only registers its between-test cleanup when `afterEach` is global.
           globals: true,
+          // The e2e project's browsers share the runner, so a component test can take well past the 5s default.
+          testTimeout: 30_000,
         },
       }),
       {
