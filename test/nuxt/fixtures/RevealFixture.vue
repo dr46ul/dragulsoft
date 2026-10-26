@@ -11,9 +11,9 @@ useReveal(root)
     <h2 data-reveal="words">
       Software drawn up properly
     </h2>
-    <p data-reveal="rise">
+    <figure data-reveal="rise">
       One accountable lead from first sketch to launch.
-    </p>
+    </figure>
     <ul data-reveal="stagger">
       <li>Specify</li>
       <li>Design</li>
