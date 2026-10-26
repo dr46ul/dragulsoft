@@ -94,7 +94,7 @@
   text-transform: uppercase;
 }
 
-/* Hairline glyph outline with no fill; callers paint into the letters through background-clip. */
+/* Callers paint the highlighter band into the letters through background-clip, which needs the fill transparent. */
 @utility outlined-text {
   color: transparent;
   -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-base-content) 85%, transparent);

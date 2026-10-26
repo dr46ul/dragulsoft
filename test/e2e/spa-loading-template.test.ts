@@ -37,7 +37,8 @@ describe('the SPA loading template', () => {
 
   it('is the same colour as the site behind it', async () => {
     const site = await createPage('/', { viewport: desktop })
-    const siteColour = await site.evaluate(() => getComputedStyle(document.querySelector('.bg-drafting') ?? document.body).backgroundColor)
+    // Not falling back to the body: a missing .bg-drafting would make the comparison meaningless.
+    const siteColour = await site.locator('.bg-drafting').first().evaluate(element => getComputedStyle(element).backgroundColor)
     await site.close()
     const page = await loaderPage()
 
@@ -50,9 +51,10 @@ describe('the SPA loading template', () => {
   it('keeps drawing the brand mark when motion is allowed', async () => {
     const page = await loaderPage({ reducedMotion: 'no-preference' })
 
-    const running = await page.evaluate(() => document.getAnimations().length)
+    const durations = await page.evaluate(() => document.getAnimations().map(animation => animation.effect?.getTiming().duration))
 
-    expect(running).toBeGreaterThan(0)
+    expect(durations.length).toBeGreaterThan(0)
+    expect(new Set(durations)).toEqual(new Set([2600]))
     await page.close()
   })
 

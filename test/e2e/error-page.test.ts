@@ -1,4 +1,4 @@
-import type { ConsoleMessage } from 'playwright-core'
+import type { ConsoleMessage, Page } from 'playwright-core'
 import { createPage, fetch } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
 import { setupApp } from './setup'
@@ -6,6 +6,10 @@ import { setupApp } from './setup'
 await setupApp()
 
 const missing = '/no-such-sheet'
+function copyBlock(page: Page) {
+  return page.getByRole('heading', { level: 1 }).locator('..')
+}
+
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'desktop', width: 1440, height: 900 },
@@ -26,7 +30,9 @@ describe.each(viewports)('error page on $name', ({ width, height }) => {
     })
     const errors: string[] = []
     page.on('console', (message: ConsoleMessage) => {
-      if (message.type() === 'error' && !message.text().includes('404'))
+      // The browser logs the failed document request itself; any other 404 (a font, an asset) is a real fault.
+      const isMissingPageRequest = message.text().includes('status of 404') && message.location().url.endsWith(missing)
+      if (message.type() === 'error' && !isMissingPageRequest)
         errors.push(message.text())
     })
     page.on('pageerror', error => errors.push(error.message))
@@ -38,6 +44,11 @@ describe.each(viewports)('error page on $name', ({ width, height }) => {
     await expect(page.getByText(/Error 404/).isVisible()).resolves.toBe(true)
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
     expect(overflow).toBeLessThanOrEqual(0)
+    // The page root clips overflow, so scrollWidth can't fail; the copy block's own box can.
+    const box = await copyBlock(page).boundingBox()
+    expect(box?.x).toBeGreaterThanOrEqual(0)
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(width)
+    expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(height)
     expect(errors).toEqual([])
     await page.close()
   })
@@ -59,6 +70,47 @@ describe.each(viewports)('error page on $name', ({ width, height }) => {
       await expect(page.getByRole('heading', { level: 1 }).textContent()).resolves.not.toBe('This sheet isn’t in the set.')
       await page.close()
     }
+  })
+})
+
+describe('error page on small screens', () => {
+  it('keeps the copy clear of the left ruler at 360px wide', async () => {
+    const page = await createPage(missing, {
+      viewport: { width: 360, height: 800 },
+    })
+    await page.waitForLoadState('networkidle')
+
+    const box = await copyBlock(page).boundingBox()
+
+    expect(box?.x).toBeGreaterThanOrEqual(24)
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(360)
+    await page.close()
+  })
+
+  it('keeps the copy block clear of the brand mark at 720px tall', async () => {
+    const page = await createPage(missing, {
+      viewport: { width: 1280, height: 720 },
+    })
+    await page.waitForLoadState('networkidle')
+
+    const brand = await page.getByRole('link', { name: /Dragulsoft/ }).boundingBox()
+    const copy = await copyBlock(page).boundingBox()
+
+    expect(copy?.y).toBeGreaterThanOrEqual((brand?.y ?? 0) + (brand?.height ?? 0))
+    await page.close()
+  })
+})
+
+describe('error page on a large screen', () => {
+  it('numbers the rulers all the way to the far edges', async () => {
+    const page = await createPage(missing, {
+      viewport: { width: 2560, height: 1440 },
+    })
+    await page.waitForLoadState('networkidle')
+
+    await expect(page.getByText('27', { exact: true }).isVisible()).resolves.toBe(true)
+    await expect(page.getByText('O', { exact: true }).isVisible()).resolves.toBe(true)
+    await page.close()
   })
 })
 

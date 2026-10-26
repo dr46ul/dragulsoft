@@ -9,7 +9,6 @@ const route = useRoute()
 // Nuxt still fills the deprecated statusCode on errors raised by older callers.
 const status = computed(() => props.error.status ?? props.error.statusCode ?? 500)
 const copy = computed(() => errorCopy(status.value, props.error.statusText))
-const retryable = computed(() => status.value >= 500)
 const path = computed(() => route.path)
 
 useHead({
@@ -20,21 +19,31 @@ useHead({
 const CELL = 96
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+// The server can't know the viewport, so it renders enough ruler marks for a 2304x1344 screen and the client
+// replaces the count on mount; the root clips whatever overshoots.
+const rulers = reactive({ cols: 24, rows: 14 })
 const target = reactive({ col: 9, row: 2 })
 const cross = reactive({ x: CELL * 10, y: CELL * 3, live: false })
+// The first placement happens before the visitor has seen the page, so it must not ease in from the server position.
+const eased = ref(false)
 
-const gridRef = computed(() => {
-  const col = Math.floor(cross.x / CELL)
-  const row = Math.floor(cross.y / CELL)
-  return `${LETTERS[row] ?? '?'}${col + 1}`
-})
+const cell = computed(() => ({
+  col: Math.floor(cross.x / CELL),
+  row: Math.floor(cross.y / CELL),
+}))
+const gridRef = computed(() => `${LETTERS[cell.value.row] ?? '?'}${cell.value.col + 1}`)
+// The empty cell is two columns wide to match its w-48 box.
 const onTarget = computed(() => {
-  const col = Math.floor(cross.x / CELL)
-  const row = Math.floor(cross.y / CELL)
+  const { col, row } = cell.value
   return col >= target.col && col < target.col + 2 && row === target.row
 })
+const targetRef = computed(() => `${LETTERS[target.row] ?? '?'}${target.col + 1}`)
 
 function park() {
+  rulers.cols = Math.ceil(window.innerWidth / CELL)
+  rulers.rows = Math.min(LETTERS.length, Math.ceil(window.innerHeight / CELL))
+  // The empty cell sits about two thirds across and a third down, where the eye lands first on a landscape
+  // screen, and clear of the copy block anchored bottom-left.
   target.col = Math.max(1, Math.floor((window.innerWidth * 0.66) / CELL) - 1)
   target.row = Math.max(1, Math.floor((window.innerHeight * 0.32) / CELL))
   cross.x = (target.col + 1) * CELL
@@ -50,8 +59,17 @@ function follow(event: PointerEvent) {
   cross.live = true
 }
 
+// A touch or pen pointer also fires pointerleave when it lifts, which would yank the crosshair away mid-tap.
+function leave(event: PointerEvent) {
+  if (event.pointerType === 'mouse')
+    park()
+}
+
 onMounted(() => {
   park()
+  requestAnimationFrame(() => {
+    eased.value = true
+  })
   window.addEventListener('resize', park)
   if (!prefersReducedMotion())
     window.addEventListener('pointermove', follow)
@@ -66,14 +84,14 @@ const retry = () => reloadNuxtApp({ force: true })
 </script>
 
 <template>
-  <div class="relative min-h-svh overflow-hidden bg-drafting text-base-content" @pointerleave="park">
+  <div class="relative min-h-svh overflow-hidden bg-drafting text-base-content" @pointerleave="leave">
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
       <div class="absolute inset-x-0 top-0 flex h-6 border-b border-secondary/30 bg-base-200/70 font-label text-[0.6rem] text-base-content/50">
-        <span v-for="n in 24" :key="n" class="flex w-24 shrink-0 items-center justify-center">{{ n }}</span>
+        <span v-for="n in rulers.cols" :key="n" class="flex w-24 shrink-0 items-center justify-center">{{ n }}</span>
       </div>
       <div class="absolute inset-y-0 left-0 flex w-6 flex-col border-r border-secondary/30 bg-base-200/70 font-label text-[0.6rem] text-base-content/50">
         <span
-          v-for="letter in LETTERS.slice(0, 14)"
+          v-for="letter in LETTERS.slice(0, rulers.rows)"
           :key="letter"
           class="flex h-24 shrink-0 items-center justify-center"
         >
@@ -89,7 +107,7 @@ const retry = () => reloadNuxtApp({ force: true })
       </div>
 
       <div
-        :class="{ live: cross.live }"
+        :class="{ live: cross.live, eased }"
         :style="{ '--x': `${cross.x}px`, '--y': `${cross.y}px` }"
         class="crosshair hidden md:block"
       >
@@ -97,8 +115,8 @@ const retry = () => reloadNuxtApp({ force: true })
         <span class="line-y absolute inset-y-0 left-0 w-px bg-primary/70" />
         <span class="reticle absolute top-0 left-0 size-5 rounded-full border border-primary" />
         <span
-          :class="onTarget ? 'border-accent text-accent' : 'border-primary text-primary'"
-          class="chip absolute top-0 left-0 border bg-base-200 px-2 py-1 font-label text-[0.6rem] tracking-[0.12em] whitespace-nowrap uppercase"
+          :class="onTarget ? 'badge-accent' : 'badge-primary'"
+          class="chip badge absolute top-0 left-0 rounded-none badge-outline bg-base-200 font-label text-[0.6rem] tracking-[0.12em] whitespace-nowrap uppercase"
         >
           {{ gridRef }} · {{ onTarget ? copy.label : 'Blank' }}
         </span>
@@ -113,7 +131,7 @@ const retry = () => reloadNuxtApp({ force: true })
 
       <div class="max-w-2xl">
         <p class="eyebrow text-secondary">
-          Error {{ status }} · grid ref {{ LETTERS[target.row] }}{{ target.col + 1 }}–{{ target.col + 2 }}
+          Error {{ status }} · grid ref {{ targetRef }}
         </p>
         <div class="relative mt-8 inline-block pb-9" aria-hidden="true">
           <p class="numeral outlined-text font-display text-[clamp(7rem,22vw,17rem)] leading-[0.78] font-extrabold tracking-[-0.05em]">
@@ -132,11 +150,11 @@ const retry = () => reloadNuxtApp({ force: true })
           {{ copy.lede }}
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
-          <button v-if="retryable" type="button" class="btn btn-lg btn-primary" @click="retry">
+          <button v-if="copy.retryable" type="button" class="btn btn-lg btn-primary" @click="retry">
             Try again
           </button>
           <button
-            :class="retryable ? 'btn-ghost' : 'btn-primary'"
+            :class="copy.retryable ? 'btn-ghost' : 'btn-primary'"
             type="button"
             class="btn btn-lg"
             @click="home"
@@ -174,10 +192,10 @@ const retry = () => reloadNuxtApp({ force: true })
   .dim-line {
     animation: measure 0.9s var(--ease-draft) 0.3s both;
   }
-  .crosshair > * {
+  .crosshair.eased > * {
     transition: translate 0.6s var(--ease-settle);
   }
-  .crosshair.live > * {
+  .crosshair.eased.live > * {
     transition-duration: 0.12s;
   }
   .target {
