@@ -3,6 +3,7 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import { screen, within } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import CaseStudies from '~/components/CaseStudies.vue'
+import { requestReducedMotion } from './reduced-motion'
 
 const data = vi.hoisted((): { list: CaseStudy[] } => ({ list: [] }))
 
@@ -23,9 +24,7 @@ const northwind = {
 beforeEach(() => {
   data.list = []
   // Entrances would leave the cards invisible to role queries, and motion isn't what these tests are about.
-  vi.stubGlobal('matchMedia', (query: string) => ({
-    matches: query === '(prefers-reduced-motion: reduce)',
-  }))
+  requestReducedMotion(true)
 })
 
 afterEach(() => {

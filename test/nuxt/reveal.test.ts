@@ -2,14 +2,9 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import { screen } from '@testing-library/vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RevealFixture from './fixtures/RevealFixture.vue'
+import { requestReducedMotion } from './reduced-motion'
 
 const headingText = 'Software drawn up properly'
-
-function requestReducedMotion(reduce: boolean) {
-  vi.stubGlobal('matchMedia', (query: string) => ({
-    matches: reduce && query === '(prefers-reduced-motion: reduce)',
-  }))
-}
 
 describe('reveal composable', () => {
   afterEach(() => {

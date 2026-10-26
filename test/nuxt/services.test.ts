@@ -2,6 +2,7 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import { screen, within } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LandingServices from '~/components/landing/LandingServices.vue'
+import { requestReducedMotion } from './reduced-motion'
 
 const disciplines = [
   {
@@ -52,9 +53,7 @@ function cardOf(title: string) {
 describe('services section', () => {
   // Entrance animation hides the cards until they scroll into view; content queries need them present.
   beforeEach(() => {
-    vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-    }))
+    requestReducedMotion(true)
   })
 
   afterEach(() => {

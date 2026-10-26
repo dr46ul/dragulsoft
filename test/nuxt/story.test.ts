@@ -6,6 +6,7 @@ import { clearNuxtState } from '#imports'
 import LandingHero from '~/components/landing/LandingHero.vue'
 import { useEnquiry } from '~/composables/useEnquiry'
 import { useStory } from '~/composables/useStory'
+import { requestReducedMotion } from './reduced-motion'
 
 const chapters = [
   {
@@ -33,17 +34,6 @@ const chapters = [
     receive: ['Production deploy', 'Monitoring', 'Handover docs'],
   },
 ]
-
-// The scroll wiring listens for media changes, which a bare `{ matches }` stand-in can't do.
-function requestReducedMotion(reduce: boolean) {
-  vi.stubGlobal('matchMedia', (query: string) => ({
-    matches: reduce && query === '(prefers-reduced-motion: reduce)',
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    addListener: () => {},
-    removeListener: () => {},
-  }))
-}
 
 describe('story chapters', () => {
   beforeEach(() => {

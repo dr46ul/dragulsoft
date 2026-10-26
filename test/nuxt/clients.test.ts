@@ -2,6 +2,7 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import { screen, within } from '@testing-library/vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LandingClients from '~/components/landing/LandingClients.vue'
+import { requestReducedMotion } from './reduced-motion'
 
 const schedule = [
   {
@@ -32,9 +33,7 @@ const schedule = [
 
 describe('clients section', () => {
   beforeEach(() => {
-    vi.stubGlobal('matchMedia', (query: string) => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-    }))
+    requestReducedMotion(true)
   })
 
   afterEach(() => {

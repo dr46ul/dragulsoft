@@ -1,11 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { scrollToY } from '~/composables/useSmoothScroll'
-
-function requestReducedMotion(reduce: boolean) {
-  vi.stubGlobal('matchMedia', (query: string) => ({
-    matches: reduce && query === '(prefers-reduced-motion: reduce)',
-  }))
-}
+import { requestReducedMotion } from './reduced-motion'
 
 describe('scrollToY without the smooth-scroll engine running', () => {
   afterEach(() => {
