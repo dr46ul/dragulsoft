@@ -32,5 +32,6 @@ useSmoothScroll()
       <LandingNotes />
       <CaseStudies />
     </main>
+    <LandingFooter />
   </div>
 </template>
