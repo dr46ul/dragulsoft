@@ -28,5 +28,6 @@ useSmoothScroll()
   <div class="min-h-screen bg-drafting text-base-content">
     <a href="#main" class="btn absolute top-2 left-4 z-60 -translate-y-24 btn-sm btn-primary focus:translate-y-0">Skip to content</a>
     <main id="main" />
+    <LandingFooter />
   </div>
 </template>
