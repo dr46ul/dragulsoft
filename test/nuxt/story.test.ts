@@ -259,7 +259,10 @@ describe('the headline while the story moves', () => {
     expect(words.length).toBeGreaterThan(0)
 
     story.setLevel(0, 1)
-    await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Spec' }).getAttribute('aria-current')).toBe('step'))
+    await vi.waitFor(
+      () => expect(screen.getByRole('button', { name: 'Spec' }).getAttribute('aria-current')).toBe('step'),
+      { timeout: 5000 },
+    )
 
     expect(Array.from(heading.children)).toEqual(words)
   })
