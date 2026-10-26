@@ -19,7 +19,11 @@ useReveal(root)
           <p class="mb-5 flex items-center gap-3 eyebrow text-secondary">
             <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 05 · Case studies
           </p>
-          <h2 id="work-title" data-reveal="words" class="font-display text-[clamp(2rem,3.6vw,3.25rem)] leading-none font-bold tracking-[-0.025em]">
+          <h2
+            id="work-title"
+            data-reveal="words"
+            class="font-display text-[clamp(2rem,3.6vw,3.25rem)] leading-none font-bold tracking-[-0.025em]"
+          >
             Drawings on file.
           </h2>
         </div>
@@ -56,7 +60,13 @@ useReveal(root)
                   </th>
                   <td>
                     <span class="flex flex-wrap gap-1">
-                      <span v-for="discipline in study.disciplines" :key="discipline" class="badge badge-outline badge-sm badge-secondary">{{ disciplineLabel(discipline) }}</span>
+                      <span
+                        v-for="discipline in study.disciplines"
+                        :key="discipline"
+                        class="badge badge-outline badge-sm badge-secondary"
+                      >
+                        {{ disciplineLabel(discipline) }}
+                      </span>
                     </span>
                   </td>
                 </tr>

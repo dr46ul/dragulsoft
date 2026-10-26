@@ -73,7 +73,11 @@ onBeforeUnmount(() => trigger?.kill())
           <p class="mb-5 flex items-center gap-3 eyebrow text-secondary">
             <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 02 · Services
           </p>
-          <h2 id="services-title" data-reveal="words" class="font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance">
+          <h2
+            id="services-title"
+            data-reveal="words"
+            class="font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance"
+          >
             Three disciplines, one standard.
           </h2>
         </div>
@@ -84,12 +88,23 @@ onBeforeUnmount(() => trigger?.kill())
 
       <ul data-reveal="stagger" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-6" :class="{ playing }">
         <li v-for="service in services" :key="service.detail" class="card card-drawn">
-          <div class="demo relative m-3 mb-0 h-40 overflow-hidden rounded-field border border-secondary/30 bg-base-100" aria-hidden="true">
-            <span class="absolute top-2 left-2.5 font-label text-[0.55rem] tracking-[0.18em] text-secondary uppercase">Detail {{ service.detail }}</span>
-            <span class="absolute top-2 right-2.5 font-label text-[0.55rem] tracking-[0.18em] text-base-content/40 uppercase">Scale 1:1</span>
+          <div
+            class="demo relative m-3 mb-0 h-40 overflow-hidden rounded-field border border-secondary/30 bg-base-100"
+            aria-hidden="true"
+          >
+            <span class="absolute top-2 left-2.5 font-label text-[0.55rem] tracking-[0.18em] text-secondary uppercase">
+              Detail {{ service.detail }}
+            </span>
+            <span class="absolute top-2 right-2.5 font-label text-[0.55rem] tracking-[0.18em] text-base-content/40 uppercase">
+              Scale 1:1
+            </span>
 
             <div v-if="service.demo === 'board'" class="absolute inset-x-3 top-8 bottom-3 grid grid-cols-3 gap-2">
-              <div v-for="column in ['To do', 'Doing', 'Done']" :key="column" class="flex flex-col gap-1.5 border border-dashed border-secondary/40 p-1.5">
+              <div
+                v-for="column in ['To do', 'Doing', 'Done']"
+                :key="column"
+                class="flex flex-col gap-1.5 border border-dashed border-secondary/40 p-1.5"
+              >
                 <span class="font-label text-[0.5rem] text-base-content/55 uppercase">{{ column }}</span>
                 <span class="h-4 border border-base-content/25" />
                 <span class="h-4 border border-base-content/25" />
@@ -102,7 +117,9 @@ onBeforeUnmount(() => trigger?.kill())
               <span class="piece h-2.5 w-full border border-base-content/30" style="--d: 0" />
               <span class="piece h-12 w-full bg-primary/85" style="--d: 1" />
               <span class="piece grid grid-cols-3 gap-1.5" style="--d: 2">
-                <span class="h-8 border border-base-content/30" /><span class="h-8 border border-base-content/30" /><span class="h-8 border border-base-content/30" />
+                <span class="h-8 border border-base-content/30" />
+                <span class="h-8 border border-base-content/30" />
+                <span class="h-8 border border-base-content/30" />
               </span>
               <span class="piece mx-auto h-3 w-1/3 rounded-full border border-primary" style="--d: 3" />
             </div>
@@ -110,11 +127,21 @@ onBeforeUnmount(() => trigger?.kill())
             <div v-else class="flow absolute inset-x-0 top-8 bottom-2 grid grid-cols-3 items-center px-4">
               <span class="absolute top-[42%] right-[16%] left-[16%] h-px border-t border-dashed border-secondary/50" />
               <span class="pulse absolute top-[42%] left-[16%] size-2 -translate-y-1/2 rounded-full bg-primary" />
-              <span v-for="(node, n) in ['Email in', 'AI drafts reply', 'Ticket filed']" :key="node" class="node relative z-10 mx-auto grid place-items-center gap-1.5 text-center" :style="{ '--n': n }">
-                <span class="grid size-9 place-items-center border border-secondary/60 bg-base-100 font-label text-[0.6rem]" :class="n === 1 ? 'rotate-45' : 'rounded-full'">
+              <span
+                v-for="(node, n) in ['Email in', 'AI drafts reply', 'Ticket filed']"
+                :key="node"
+                class="node relative z-10 mx-auto grid place-items-center gap-1.5 text-center"
+                :style="{ '--n': n }"
+              >
+                <span
+                  class="grid size-9 place-items-center border border-secondary/60 bg-base-100 font-label text-[0.6rem]"
+                  :class="n === 1 ? 'rotate-45' : 'rounded-full'"
+                >
                   <span :class="{ '-rotate-45': n === 1 }">{{ n + 1 }}</span>
                 </span>
-                <span class="font-label text-[0.5rem] leading-tight text-base-content/65 uppercase">{{ node }}</span>
+                <span class="font-label text-[0.5rem] leading-tight text-base-content/65 uppercase">
+                  {{ node }}
+                </span>
               </span>
             </div>
           </div>

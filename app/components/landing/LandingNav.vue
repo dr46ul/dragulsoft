@@ -38,8 +38,12 @@ function closeMenu() {
       <a href="#top" class="flex items-center gap-3 rounded-field" :aria-label="`${brand.name}, back to top`">
         <BrandMark class="size-9 text-base-content" />
         <span class="leading-none">
-          <span class="block font-display text-[1.05rem] font-extrabold tracking-[0.08em] uppercase">{{ brand.name }}</span>
-          <span class="mt-1 hidden eyebrow text-[0.6rem] text-secondary sm:block">{{ brand.descriptor }}</span>
+          <span class="block font-display text-[1.05rem] font-extrabold tracking-[0.08em] uppercase">
+            {{ brand.name }}
+          </span>
+          <span class="mt-1 hidden eyebrow text-[0.6rem] text-secondary sm:block">
+            {{ brand.descriptor }}
+          </span>
         </span>
       </a>
     </div>
@@ -68,7 +72,12 @@ function closeMenu() {
       </details>
     </div>
 
-    <span ref="ruler" data-testid="scroll-ruler" class="ruler pointer-events-none absolute inset-x-0 -bottom-px h-px origin-left bg-primary" aria-hidden="true" />
+    <span
+      ref="ruler"
+      data-testid="scroll-ruler"
+      class="ruler pointer-events-none absolute inset-x-0 -bottom-px h-px origin-left bg-primary"
+      aria-hidden="true"
+    />
   </header>
 </template>
 

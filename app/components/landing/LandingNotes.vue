@@ -32,7 +32,11 @@ useReveal(root)
       <p class="mb-5 flex items-center gap-3 eyebrow text-secondary">
         <span class="h-px w-8 bg-secondary" aria-hidden="true" />Sheet 04 · Working together
       </p>
-      <h2 id="notes-title" data-reveal="words" class="max-w-4xl font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance">
+      <h2
+        id="notes-title"
+        data-reveal="words"
+        class="max-w-4xl font-display text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-bold tracking-[-0.03em] text-balance"
+      >
         The terms are on the drawing, not in the small print.
       </h2>
 
@@ -51,7 +55,9 @@ useReveal(root)
             :key="item.title"
             class="flex flex-col gap-3 bg-base-200 p-5 md:p-8 md:max-xl:last:col-span-2"
           >
-            <span class="font-display text-5xl leading-none font-bold text-secondary/60 tabular-nums">{{ index + 1 }}.</span>
+            <span class="font-display text-5xl leading-none font-bold text-secondary/60 tabular-nums">
+              {{ index + 1 }}.
+            </span>
             <h3 class="font-display text-xl font-bold tracking-tight text-balance">
               {{ item.title }}
             </h3>
