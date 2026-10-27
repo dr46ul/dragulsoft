@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        task: [lint, typecheck, build, test]
+        task: [lint, typecheck, build]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v6
@@ -32,6 +32,42 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - if: matrix.task == 'test'
-        run: pnpm exec playwright-core install --with-deps chromium
       - run: pnpm ${{ matrix.task }}
+
+  test-project:
+    name: test:${{ matrix.project }}
+    runs-on: ubuntu-latest
+    env:
+      NO_COLOR: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [unit, nuxt, e2e]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - if: matrix.project == 'e2e'
+        run: pnpm exec playwright-core install --with-deps chromium
+      # Without NUXT_TEST_HOST every e2e file builds the app for itself, so build and serve it once.
+      - if: matrix.project == 'e2e'
+        run: |
+          pnpm build
+          PORT=3000 HOST=127.0.0.1 node .output/server/index.mjs &
+          curl --retry 30 --retry-connrefused --retry-delay 1 -sf -o /dev/null http://127.0.0.1:3000
+      - run: pnpm test:${{ matrix.project }}
+        env:
+          NUXT_TEST_HOST: ${{ matrix.project == 'e2e' && 'http://127.0.0.1:3000' || '' }}
+
+  # main's branch protection requires a check named `test`, so it stands for every test project passing.
+  test:
+    needs: test-project
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - if: needs.test-project.result != 'success'
+        run: exit 1
