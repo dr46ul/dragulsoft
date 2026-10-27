@@ -30,6 +30,7 @@ jobs:
   test-project:
     name: test:${{ matrix.project }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:

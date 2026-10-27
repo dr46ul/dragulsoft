@@ -18,6 +18,9 @@ runs:
         cache: pnpm
     - shell: bash
       run: pnpm install --frozen-lockfile
+    # The runner image ships Google Chrome, so Chromium's system libraries are already there and --with-deps only
+    # adds an apt install that can hang. The tests run headless, which needs only the headless shell. Caching it
+    # was tried and saved about 2s, no more than downloading it.
     - if: inputs.browsers == 'true'
       shell: bash
-      run: pnpm exec playwright-core install --with-deps chromium
+      run: pnpm exec playwright-core install --only-shell chromium
