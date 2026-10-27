@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
+      E2E_HOST: 127.0.0.1
+      E2E_PORT: 3000
     strategy:
       fail-fast: false
       matrix:
@@ -57,11 +59,11 @@ jobs:
       - if: matrix.project == 'e2e'
         run: |
           pnpm build
-          PORT=3000 HOST=127.0.0.1 node .output/server/index.mjs &
-          curl --retry 30 --retry-connrefused --retry-delay 1 -sf -o /dev/null http://127.0.0.1:3000
+          HOST=$E2E_HOST PORT=$E2E_PORT node .output/server/index.mjs &
+          curl --retry 30 --retry-connrefused --retry-delay 1 -sf -o /dev/null "http://$E2E_HOST:$E2E_PORT"
       - run: pnpm test:${{ matrix.project }}
         env:
-          NUXT_TEST_HOST: ${{ matrix.project == 'e2e' && 'http://127.0.0.1:3000' || '' }}
+          NUXT_TEST_HOST: ${{ matrix.project == 'e2e' && format('http://{0}:{1}', env.E2E_HOST, env.E2E_PORT) || '' }}
 
   # main's branch protection requires a check named `test`, so it stands for every test project passing.
   test:
