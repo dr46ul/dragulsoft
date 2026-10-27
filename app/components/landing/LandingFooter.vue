@@ -13,7 +13,7 @@ useReveal(root)
       <div data-reveal="rise" class="relative" aria-hidden="true">
         <span class="absolute inset-x-0 top-[0.06em] border-t border-dashed border-secondary/40" />
         <!-- 6.8 is the wordmark's width in em at this weight and tracking, so 100vw minus the page padding fits it from 360px to 1920px. -->
-        <p class="wordmark font-display text-[length:min(calc((100vw-4rem)/6.8),12.75rem)] leading-[0.78] font-extrabold tracking-[-0.045em] uppercase">
+        <p class="wordmark outlined-text font-display text-[length:min(calc((100vw-4rem)/6.8),12.75rem)] leading-[0.78] font-extrabold tracking-[-0.045em] uppercase">
           {{ brand.name }}
         </p>
         <span class="absolute inset-x-0 bottom-0 border-t border-dashed border-secondary/40" />
@@ -77,13 +77,8 @@ useReveal(root)
 
 <style scoped>
 .wordmark {
-  color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-base-content) 85%, transparent);
   background-image: linear-gradient(var(--color-base-content), var(--color-base-content));
-  background-clip: text;
-  background-repeat: no-repeat;
   background-size: 100% 0%;
-  background-position: bottom;
 }
 .wordmark:hover {
   background-size: 100% 100%;

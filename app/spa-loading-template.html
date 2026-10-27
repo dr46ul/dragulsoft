@@ -1,0 +1,126 @@
+<!--
+  Nuxt renders this outside Vue, before the app stylesheet has loaded, so it carries its own copy of the theme tokens
+  from app/assets/css/main.css and makes no requests. The brand mark below duplicates app/components/BrandMark.vue
+  and must change with it.
+-->
+<div class="dl-loader" role="status" aria-label="Loading Dragulsoft">
+  <div class="plate">
+    <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+      <line class="guide" x1="2" y1="34" x2="38" y2="34" stroke-width="1" stroke-dasharray="1.5 2.5" />
+      <line class="guide" x1="27" y1="2" x2="27" y2="38" stroke-width="1" stroke-dasharray="1.5 2.5" />
+      <circle class="stroke" cx="17" cy="24" r="10" pathLength="1" />
+      <line class="stroke late" x1="27" y1="6" x2="27" y2="34" pathLength="1" />
+      <circle class="node" cx="27" cy="6" r="2.4" stroke="none" />
+    </svg>
+    <p class="wordmark">Dragulsoft</p>
+    <p class="eyebrow">Drawing up</p>
+  </div>
+</div>
+<style>
+  .dl-loader {
+    --base-100: oklch(31% 0.09 258);
+    --base-200: oklch(27% 0.085 258);
+    --content: oklch(95% 0.02 240);
+    --primary: oklch(88% 0.16 95);
+    --secondary: oklch(83% 0.08 225);
+    --minor: color-mix(in oklab, var(--content) 6%, transparent);
+    --major: color-mix(in oklab, var(--content) 11%, transparent);
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --display: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --draft: cubic-bezier(0.65, 0, 0.35, 1);
+    --settle: cubic-bezier(0.22, 1, 0.36, 1);
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    color: var(--content);
+    font-family: var(--mono);
+    background-color: var(--base-100);
+    background-image:
+      linear-gradient(var(--major) 1px, transparent 1px), linear-gradient(90deg, var(--major) 1px, transparent 1px),
+      linear-gradient(var(--minor) 1px, transparent 1px), linear-gradient(90deg, var(--minor) 1px, transparent 1px);
+    background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+    background-position: -1px -1px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dl-loader p {
+    margin: 0;
+  }
+  .dl-loader .plate {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+    padding: 36px 44px 28px;
+    border: 1.5px solid color-mix(in oklab, var(--secondary) 55%, transparent);
+    background: color-mix(in oklab, var(--base-200) 78%, transparent);
+    border-radius: 4px;
+  }
+  .dl-loader .plate::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    --m: 14px;
+    --c: var(--primary);
+    background:
+      linear-gradient(var(--c) 0 0) left top / var(--m) 2px, linear-gradient(var(--c) 0 0) left top / 2px var(--m),
+      linear-gradient(var(--c) 0 0) right top / var(--m) 2px, linear-gradient(var(--c) 0 0) right top / 2px var(--m),
+      linear-gradient(var(--c) 0 0) left bottom / var(--m) 2px, linear-gradient(var(--c) 0 0) left bottom / 2px var(--m),
+      linear-gradient(var(--c) 0 0) right bottom / var(--m) 2px, linear-gradient(var(--c) 0 0) right bottom / 2px var(--m);
+    background-repeat: no-repeat;
+  }
+  .dl-loader svg {
+    width: 72px;
+    height: 72px;
+    overflow: visible;
+  }
+  .dl-loader .guide {
+    opacity: 0.45;
+  }
+  .dl-loader .node {
+    fill: var(--primary);
+    transform-origin: 27px 6px;
+  }
+  .dl-loader .wordmark {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .dl-loader .eyebrow {
+    color: var(--secondary);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .dl-loader .stroke {
+      stroke-dasharray: 1;
+      animation: dl-draw 2.6s var(--draft) infinite;
+    }
+    .dl-loader .stroke.late {
+      animation-name: dl-draw-late;
+    }
+    .dl-loader .node {
+      animation: dl-pop 2.6s var(--settle) infinite;
+    }
+  }
+  @keyframes dl-draw {
+    0% { stroke-dashoffset: 1; }
+    40%, 80% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -1; }
+  }
+  @keyframes dl-draw-late {
+    0%, 15% { stroke-dashoffset: 1; }
+    50%, 80% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -1; }
+  }
+  @keyframes dl-pop {
+    0%, 48% { transform: scale(0); }
+    58%, 82% { transform: scale(1); }
+    100% { transform: scale(0); }
+  }
+</style>
