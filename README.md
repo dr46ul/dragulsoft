@@ -122,4 +122,4 @@ Dependabot opens weekly updates for npm packages and GitHub Actions. pnpm's supp
 
 Copyright © 2026 dragulsoft. All rights reserved.
 
-The source is public to read. No license is granted to copy, modify or distribute it.
+The source is public to read (scratch). No license is granted to copy, modify or distribute it.
