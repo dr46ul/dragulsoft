@@ -1,0 +1,23 @@
+name: Setup
+description: Loads .github/ci.env, installs Node and pnpm, and installs the dependencies.
+
+inputs:
+  browsers:
+    description: Also install Chromium for the e2e tests.
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: grep -Ev '^[[:space:]]*(#|$)' "$GITHUB_WORKSPACE/.github/ci.env" >> "$GITHUB_ENV"
+    - uses: pnpm/action-setup@v6
+    - uses: actions/setup-node@v7
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+    - shell: bash
+      run: pnpm install --frozen-lockfile
+    - if: inputs.browsers == 'true'
+      shell: bash
+      run: pnpm exec playwright-core install --with-deps chromium
