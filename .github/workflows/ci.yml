@@ -14,9 +14,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# On a Markdown-only pull request each job skips its own steps rather than being skipped. Required checks match by
-# name, and a matrix job skipped by `if:` reports as `matrix.task`, not as typecheck and build. A job deciding for all
-# the others would put its runtime and a runner pickup, ~8s, in front of every code PR.
+# On a Markdown-only pull request, jobs skip their steps rather than being skipped: required checks match by name, and
+# a skipped matrix job reports as `matrix.task`. A job deciding for the others would delay every code PR by ~7s.
 jobs:
   check:
     name: ${{ matrix.task }}
