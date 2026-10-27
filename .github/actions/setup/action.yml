@@ -31,8 +31,8 @@ runs:
       with:
         path: node_modules
         key: ${{ steps.node-modules.outputs.cache-primary-key }}
-    # On an up-to-date node_modules, pnpm install skips postinstall but still spends ~5s re-verifying the lockfile
-    # against the registry, for a lockfile the cache key already pins.
+    # On an up-to-date node_modules, pnpm install skips postinstall but still re-verifies the whole lockfile against
+    # the registry, a lockfile the cache key already pins.
     - if: steps.node-modules.outputs.cache-hit == 'true'
       shell: bash
       run: pnpm run postinstall
