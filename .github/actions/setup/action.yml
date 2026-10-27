@@ -1,5 +1,5 @@
 name: Setup
-description: Loads .github/ci.env, installs Node and pnpm, and installs the dependencies.
+description: Loads .github/ci.env, installs Node and pnpm, and installs the dependencies or restores them from the cache.
 
 inputs:
   browsers:
@@ -12,12 +12,30 @@ runs:
     - shell: bash
       run: grep -Ev '^[[:space:]]*(#|$)' "$GITHUB_WORKSPACE/.github/ci.env" >> "$GITHUB_ENV"
     - uses: pnpm/action-setup@v6
+    # pnpm's version (package.json) and settings (pnpm-workspace.yaml) shape node_modules as much as the lockfile does.
+    - id: node-modules
+      uses: actions/cache/restore@v6
+      with:
+        path: node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
     - uses: actions/setup-node@v7
       with:
         node-version-file: .nvmrc
-        cache: pnpm
-    - shell: bash
+        cache: ${{ steps.node-modules.outputs.cache-hit != 'true' && 'pnpm' || '' }}
+    - if: steps.node-modules.outputs.cache-hit != 'true'
+      shell: bash
       run: pnpm install --frozen-lockfile
+    # Saved now rather than when the job ends, so the caches tools later write into node_modules stay out of it.
+    - if: steps.node-modules.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: node_modules
+        key: ${{ steps.node-modules.outputs.cache-primary-key }}
+    # On an up-to-date node_modules, pnpm install skips postinstall but still spends ~5s re-verifying the lockfile
+    # against the registry, for a lockfile the cache key already pins.
+    - if: steps.node-modules.outputs.cache-hit == 'true'
+      shell: bash
+      run: pnpm run postinstall
     # The runner image ships Google Chrome, so Chromium's system libraries are already there and --with-deps only
     # adds an apt install that can hang. The tests run headless, which needs only the headless shell. Caching it
     # was tried and saved about 2s, no more than downloading it.
