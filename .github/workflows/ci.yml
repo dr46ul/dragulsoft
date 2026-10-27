@@ -14,6 +14,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# On a Markdown-only pull request each job skips its own steps rather than being skipped. Required checks match by
+# name, and a matrix job skipped by `if:` reports as `matrix.task`, not as typecheck and build. A job deciding for all
+# the others would put its runtime and a runner pickup, ~8s, in front of every code PR.
 jobs:
   check:
     name: ${{ matrix.task }}
@@ -24,8 +27,15 @@ jobs:
         task: [lint, typecheck, build]
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - run: pnpm ${{ matrix.task }}
+        with:
+          fetch-depth: 2
+      - id: changes
+        uses: ./.github/actions/changes
+      # ESLint lints Markdown too.
+      - if: matrix.task == 'lint' || steps.changes.outputs.code == 'true'
+        uses: ./.github/actions/setup
+      - if: matrix.task == 'lint' || steps.changes.outputs.code == 'true'
+        run: pnpm ${{ matrix.task }}
 
   test-project:
     name: test:${{ matrix.project }}
@@ -36,9 +46,15 @@ jobs:
       matrix:
         project: [unit, nuxt]
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: pnpm test:${{ matrix.project }}
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+      - id: changes
+        uses: ./.github/actions/changes
+      - if: steps.changes.outputs.code == 'true'
+        uses: ./.github/actions/setup
+      - if: steps.changes.outputs.code == 'true'
+        run: pnpm test:${{ matrix.project }}
 
   # The runner is CPU-bound on the browser tests, so splitting them across runners is what shortens the job.
   e2e:
@@ -51,16 +67,23 @@ jobs:
         shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+        with:
+          fetch-depth: 2
+      - id: changes
+        uses: ./.github/actions/changes
+      - if: steps.changes.outputs.code == 'true'
+        uses: ./.github/actions/setup
         with:
           browsers: true
       # Without NUXT_TEST_HOST every e2e file builds the app for itself, so build and serve it once.
-      - run: |
+      - if: steps.changes.outputs.code == 'true'
+        run: |
           pnpm build
           HOST=$E2E_HOST PORT=$E2E_PORT node .output/server/index.mjs &
           curl --retry 30 --retry-connrefused --retry-delay 1 -sf -o /dev/null "http://$E2E_HOST:$E2E_PORT"
           echo "NUXT_TEST_HOST=http://$E2E_HOST:$E2E_PORT" >> "$GITHUB_ENV"
-      - run: pnpm test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - if: steps.changes.outputs.code == 'true'
+        run: pnpm test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
   # main's branch protection requires a check named `test`, so it stands for every test job passing.
   test:
