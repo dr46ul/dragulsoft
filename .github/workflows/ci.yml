@@ -23,7 +23,7 @@ jobs:
       matrix:
         task: [lint, typecheck, build]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: pnpm ${{ matrix.task }}
 
@@ -50,7 +50,7 @@ jobs:
       matrix:
         shard: [1, 2, 3]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           browsers: true
