@@ -41,6 +41,11 @@ Colours come from daisyUI's semantic tokens (`primary`, `secondary`, `accent`,
 `app/assets/css/main.css` (`@plugin 'daisyui/theme'`), not in per-component
 overrides.
 
+`app/spa-loading-template.html` is the one exception. Nuxt renders it before the
+stylesheet loads, so it carries its own copies of the theme colours, and
+`test/unit/spa-loading-template.test.ts` fails when they stop matching
+`main.css`.
+
 ## Designs and prototypes
 
 Mockups, prototypes and design explorations for this project use daisyUI
