@@ -34,26 +34,39 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [unit, nuxt, e2e]
+        project: [unit, nuxt]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm test:${{ matrix.project }}
+
+  # The runner is CPU-bound on the browser tests, so splitting them across runners is what shortens the job.
+  e2e:
+    name: test:e2e (${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
-          browsers: ${{ matrix.project == 'e2e' }}
+          browsers: true
       # Without NUXT_TEST_HOST every e2e file builds the app for itself, so build and serve it once.
-      - if: matrix.project == 'e2e'
-        run: |
+      - run: |
           pnpm build
           HOST=$E2E_HOST PORT=$E2E_PORT node .output/server/index.mjs &
           curl --retry 30 --retry-connrefused --retry-delay 1 -sf -o /dev/null "http://$E2E_HOST:$E2E_PORT"
           echo "NUXT_TEST_HOST=http://$E2E_HOST:$E2E_PORT" >> "$GITHUB_ENV"
-      - run: pnpm test:${{ matrix.project }}
+      - run: pnpm test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
-  # main's branch protection requires a check named `test`, so it stands for every test project passing.
+  # main's branch protection requires a check named `test`, so it stands for every test job passing.
   test:
-    needs: test-project
+    needs: [test-project, e2e]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - if: needs.test-project.result != 'success'
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: exit 1
