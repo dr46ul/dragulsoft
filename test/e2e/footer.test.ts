@@ -7,11 +7,6 @@ await setupApp()
 
 const widths = [360, 390, 1440, 1920]
 
-// The wizard is not built yet, so the page can only reach the available state through Nuxt's shared state.
-async function makeEnquiryAvailable(page: Page) {
-  await page.evaluate('document.querySelector("#__nuxt").__vue_app__.config.globalProperties.$nuxt.payload.state["$senquiry-available"] = true')
-}
-
 async function cellLefts(page: Page) {
   const cells = page.getByRole('contentinfo').locator('.footer > div')
   return cells.evaluateAll(elements => elements.map(element => Math.round(element.getBoundingClientRect().left)))
@@ -49,36 +44,21 @@ describe('footer title block', () => {
       reducedMotion: 'reduce',
     })
     await page.waitForLoadState('networkidle')
-    await makeEnquiryAvailable(page)
 
     await expect.poll(async () => (await cellLefts(page)).length).toBe(4)
     expect(new Set(await cellLefts(page)).size).toBe(1)
     await page.close()
   })
 
-  it('lays four cells in a row at 1440px once enquiries are possible', async () => {
+  it('lays four cells in a row at 1440px', async () => {
     const page = await createPage('/', {
       viewport: { width: 1440, height: 900 },
       reducedMotion: 'reduce',
     })
     await page.waitForLoadState('networkidle')
-    await makeEnquiryAvailable(page)
 
     await expect.poll(async () => (await cellLefts(page)).length).toBe(4)
     expect(new Set(await cellLefts(page)).size).toBe(4)
-    await page.close()
-  })
-
-  it('lays three cells in a row at 1440px while enquiries are not possible', async () => {
-    const page = await createPage('/', {
-      viewport: { width: 1440, height: 900 },
-      reducedMotion: 'reduce',
-    })
-    await page.waitForLoadState('networkidle')
-
-    const lefts = await cellLefts(page)
-    expect(lefts).toHaveLength(3)
-    expect(new Set(lefts).size).toBe(3)
     await page.close()
   })
 })

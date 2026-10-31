@@ -1,8 +1,13 @@
-export type EnquirySource = 'nav' | 'hero' | 'story' | 'teaser' | 'footer'
+import type { Feature, Kind, Launch, Source, Start } from '@dragulsoft/adam-protocol'
+
+export type EnquirySource = Source
 
 export interface EnquiryPrefill {
-  scope: string[]
-  timing: string
+  kinds?: Kind[]
+  features?: Feature[]
+  start?: Start
+  launch?: Launch
+  projectName?: string
 }
 
 // Every section button that starts an enquiry renders only while `available` is true, so a page without the wizard never shows a dead button.

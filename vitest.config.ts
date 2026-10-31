@@ -17,6 +17,16 @@ export default defineConfig({
           name: 'nuxt',
           include: ['test/nuxt/**/*.{test,spec}.ts'],
           environment: 'nuxt',
+          // Same-origin, so `registerEndpoint` can stand in for Adam's intake.
+          environmentOptions: {
+            nuxt: {
+              overrides: {
+                runtimeConfig: {
+                  public: { adamBaseUrl: '' },
+                },
+              },
+            },
+          },
           // Testing Library only registers its between-test cleanup when `afterEach` is global.
           globals: true,
         },
