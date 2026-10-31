@@ -132,6 +132,20 @@ export type Source = z.infer<typeof Source>
 
 const other = z.string().max(200).optional()
 
+// One shape per kind of question, with the "other" text beside the choices it extends; absent when left blank.
+function manyOf<T extends z.ZodType>(choice: T) {
+  return z.object({
+    choices: z.array(choice),
+    other,
+  }).optional()
+}
+function oneOf<T extends z.ZodType>(choice: T) {
+  return z.object({
+    choice: choice.optional(),
+    other,
+  }).optional()
+}
+
 export const Enquiry = z.object({
   contact: z.object({
     name: z.string().min(1).max(80),
@@ -154,10 +168,8 @@ export const Enquiry = z.object({
     },
   ),
   connections: z.object({
-    systems: z.array(System),
-    systemsOther: other,
-    data: DataSource.optional(),
-    dataOther: other,
+    systems: manyOf(System),
+    data: oneOf(DataSource),
   }).optional(),
   timing: z.object({
     start: Start,
@@ -166,25 +178,13 @@ export const Enquiry = z.object({
   }),
   budget: z.object({ currency: Currency, band: Band }).optional(),
   problem: z.string().min(1).max(280),
-  audience: z.object({
-    choices: z.array(Audience),
-    other,
-  }).optional(),
-  today: z.object({
-    choice: Today.optional(),
-    other,
-  }).optional(),
-  done: z.object({
-    choices: z.array(Done),
-    other,
-  }).optional(),
+  audience: manyOf(Audience),
+  today: oneOf(Today),
+  done: manyOf(Done),
   ready: z.object({
     choices: z.array(Ready),
   }).optional(),
-  constraints: z.object({
-    choices: z.array(Constraint),
-    other,
-  }).optional(),
+  constraints: manyOf(Constraint),
   decider: Decider.optional(),
   summary: z.string().min(1).max(600),
   source: Source,

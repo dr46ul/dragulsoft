@@ -6,6 +6,8 @@ import { blankAnswers, budgetLabel, composeBrief, toEnquiry } from '../../app/ut
 function answers(overrides: Partial<BriefAnswers>): BriefAnswers {
   return {
     ...blankAnswers(),
+    start: 'idea',
+    launch: 'open',
     ...overrides,
   }
 }
@@ -46,6 +48,29 @@ describe('composeBrief', () => {
       kinds: ['site'],
       projectName: '  Order desk ',
     }))).toBe('Order desk: a website. We’re starting from just an idea, and have no fixed launch date.')
+  })
+
+  it('leaves out the starting point and launch window until they are chosen', () => {
+    expect(composeBrief(answers({
+      kinds: ['site'],
+      start: null,
+      launch: null,
+    }))).toBe('Your product: a website.')
+  })
+
+  it('gives the starting point alone while the launch window is open', () => {
+    expect(composeBrief(answers({
+      kinds: ['site'],
+      launch: null,
+    }))).toBe('Your product: a website. We’re starting from just an idea.')
+  })
+
+  it('gives the launch window alone while the starting point is open', () => {
+    expect(composeBrief(answers({
+      kinds: ['site'],
+      start: null,
+      launch: 'quarter',
+    }))).toBe('Your product: a website. We are aiming to launch within a quarter.')
   })
 
   it('is empty until a kind is chosen', () => {
@@ -177,10 +202,14 @@ describe('toEnquiry', () => {
         other: 'A kiosk mode',
       },
       connections: {
-        systems: ['payments', 'crm'],
-        systemsOther: 'Shopify',
-        data: 'spreadsheets',
-        dataOther: 'Three years of orders',
+        systems: {
+          choices: ['payments', 'crm'],
+          other: 'Shopify',
+        },
+        data: {
+          choice: 'spreadsheets',
+          other: 'Three years of orders',
+        },
       },
       timing: { start: 'designs', launch: 'quarter', deadline: '2027-03-01' },
       budget: { currency: 'GBP', band: '15-40k' },
@@ -204,6 +233,33 @@ describe('toEnquiry', () => {
       decider: 'team',
       summary: 'Order desk: a web app with accounts & sign-in and dashboards & reports, plus an AI integration with chat assistant. We’re starting from existing designs, and are aiming to launch within a quarter.',
       source: 'teaser',
+    })
+    expect(Enquiry.safeParse(enquiry).success).toBe(true)
+  })
+
+  it('has no Enquiry to give while the starting point or launch window is unanswered', () => {
+    const undecided = answers({
+      kinds: ['site'],
+      problem: 'Nobody can find our opening hours.',
+      name: 'Ana',
+      email: 'ana@example.com',
+    })
+
+    expect(toEnquiry({ ...undecided, start: null }, 'hero')).toBeNull()
+    expect(toEnquiry({ ...undecided, launch: null }, 'hero')).toBeNull()
+  })
+
+  it('sends only the connection that was answered', () => {
+    const enquiry = toEnquiry(answers({
+      kinds: ['site'],
+      problem: 'Nobody can find our opening hours.',
+      name: 'Ana',
+      email: 'ana@example.com',
+      data: 'another-app',
+    }), 'hero')
+
+    expect(enquiry?.connections).toEqual({
+      data: { choice: 'another-app' },
     })
     expect(Enquiry.safeParse(enquiry).success).toBe(true)
   })

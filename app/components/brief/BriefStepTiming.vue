@@ -21,12 +21,14 @@ const deadlineIssueId = useId()
     <BriefPickOne
       v-model="answers.start"
       :options="STARTS"
+      :issue="issue?.field === 'start' ? issue.message : undefined"
       legend="Where are you starting?"
       hint="Rough sketches count as designs."
     />
     <BriefPickOne
       v-model="answers.launch"
       :options="LAUNCHES"
+      :issue="issue?.field === 'launch' ? issue.message : undefined"
       legend="When should it launch?"
       hint="Pick the closest. A date that can’t move goes in the next question."
     />

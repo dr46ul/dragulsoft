@@ -25,10 +25,16 @@ async function next() {
   await user.click(screen.getByRole('button', { name: 'Next' }))
 }
 
+async function chooseTiming() {
+  await user.click(screen.getByRole('radio', { name: 'Just an idea' }))
+  await user.click(screen.getByRole('radio', { name: 'No fixed date' }))
+}
+
 async function fillToDetails() {
   await user.click(screen.getByRole('checkbox', { name: 'Website' }))
   await next()
   await next()
+  await chooseTiming()
   await next()
   await user.type(screen.getByRole('textbox', { name: 'What problem should this solve?' }), 'Nobody can find our opening hours.')
   await next()
@@ -74,11 +80,31 @@ describe('brief wizard', () => {
       await waitFor(() => expect(document.activeElement).toBe(heading))
     })
 
+    it('stays on timing and says why until both the starting point and launch window are chosen', async () => {
+      await openWizard()
+      await user.click(screen.getByRole('checkbox', { name: 'Website' }))
+      await next()
+      await next()
+      await stepHeading('Timing & budget')
+
+      await next()
+      expect(screen.getByRole('alert').textContent).toContain('Choose where you’re starting from.')
+
+      await user.click(screen.getByRole('radio', { name: 'Have designs' }))
+      await next()
+      expect(screen.getByRole('alert').textContent).toContain('Choose when it should launch.')
+
+      await user.click(screen.getByRole('radio', { name: 'Within a quarter' }))
+      await next()
+      expect(await stepHeading('The problem')).toBeTruthy()
+    })
+
     it('stays on the problem step and says why while the problem is empty', async () => {
       await openWizard()
       await user.click(screen.getByRole('checkbox', { name: 'Website' }))
       await next()
       await next()
+      await chooseTiming()
       await next()
       await stepHeading('The problem')
 
@@ -120,7 +146,7 @@ describe('brief wizard', () => {
 
     await user.click(screen.getByRole('checkbox', { name: 'Web app / SaaS' }))
     await user.click(screen.getByRole('checkbox', { name: 'Dashboards & reports' }))
-    expect(preview().textContent).toBe('Your product: a web app with dashboards & reports. We’re starting from just an idea, and have no fixed launch date.')
+    expect(preview().textContent).toBe('Your product: a web app with dashboards & reports.')
 
     await user.click(within(screen.getByRole('radiogroup', { name: 'Dashboards & reports priority' })).getByRole('radio', { name: 'Nice-to-have' }))
     expect(within(dialog).getByText('Nice-to-haves').nextElementSibling?.textContent?.trim()).toBe('Dashboards & reports')

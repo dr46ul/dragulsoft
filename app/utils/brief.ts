@@ -28,8 +28,8 @@ export interface BriefAnswers {
   systemsOther: string
   data: DataSource | null
   dataOther: string
-  start: Start
-  launch: Launch
+  start: Start | null
+  launch: Launch | null
   deadline: string
   currency: Currency
   band: Band | null
@@ -76,9 +76,8 @@ export function blankAnswers(): BriefAnswers {
     systemsOther: '',
     data: null,
     dataOther: '',
-    // The protocol requires timing, so both start on the answer that commits the client to least.
-    start: 'idea',
-    launch: 'open',
+    start: null,
+    launch: null,
     deadline: '',
     currency: 'EUR',
     band: null,
@@ -116,17 +115,27 @@ export function chosenFeatures(answers: BriefAnswers) {
   return chosenKinds(answers).flatMap(kind => featuresOf(kind.value, answers))
 }
 
-function choicesWithOther<T>(choices: T[], otherAnswer: string) {
+function manyOf<T>(choices: T[], otherAnswer: string) {
   const other = optionalText(otherAnswer)
   return choices.length || other
     ? { choices, other }
     : undefined
 }
 
-export function toEnquiry(answers: BriefAnswers, source: Source): Enquiry {
-  const systemsOther = optionalText(answers.systemsOther)
-  const dataOther = optionalText(answers.dataOther)
-  const todayOther = optionalText(answers.todayOther)
+function oneOf<T>(choice: T | null, otherAnswer: string) {
+  const other = optionalText(otherAnswer)
+  return choice || other
+    ? { choice: choice ?? undefined, other }
+    : undefined
+}
+
+// Null until timing is answered: the protocol requires it, and the brief shouldn't claim timing the client never gave.
+export function toEnquiry(answers: BriefAnswers, source: Source): Enquiry | null {
+  const { start, launch } = answers
+  if (!start || !launch)
+    return null
+  const systems = manyOf(answers.systems, answers.systemsOther)
+  const data = oneOf(answers.data, answers.dataOther)
   return {
     contact: {
       name: answers.name.trim(),
@@ -139,28 +148,21 @@ export function toEnquiry(answers: BriefAnswers, source: Source): Enquiry {
       features: chosenFeatures(answers).map(feature => ({ feature, priority: answers.priorities[feature] })),
       other: optionalText(answers.scopeOther),
     },
-    connections: answers.systems.length || systemsOther || answers.data || dataOther
-      ? {
-          systems: answers.systems,
-          systemsOther,
-          data: answers.data ?? undefined,
-          dataOther,
-        }
+    connections: systems || data
+      ? { systems, data }
       : undefined,
-    timing: { start: answers.start, launch: answers.launch, deadline: answers.deadline || undefined },
+    timing: { start, launch, deadline: answers.deadline || undefined },
     budget: answers.band
       ? { currency: answers.currency, band: answers.band }
       : undefined,
     problem: answers.problem.trim(),
-    audience: choicesWithOther(answers.audience, answers.audienceOther),
-    today: answers.today || todayOther
-      ? { choice: answers.today ?? undefined, other: todayOther }
-      : undefined,
-    done: choicesWithOther(answers.done, answers.doneOther),
+    audience: manyOf(answers.audience, answers.audienceOther),
+    today: oneOf(answers.today, answers.todayOther),
+    done: manyOf(answers.done, answers.doneOther),
     ready: answers.ready.length
       ? { choices: answers.ready }
       : undefined,
-    constraints: choicesWithOther(answers.constraints, answers.constraintsOther),
+    constraints: manyOf(answers.constraints, answers.constraintsOther),
     decider: answers.decider ?? undefined,
     summary: composeBrief(answers),
     source,
@@ -199,11 +201,17 @@ export function composeBrief(answers: BriefAnswers) {
   const name = answers.projectName.trim() || 'Your product'
   const from = STARTS.find(start => start.value === answers.start)?.text
   const when = LAUNCHES.find(launch => launch.value === answers.launch)?.text
-  return `${name}: ${what}. We’re starting from ${from}, and ${when}.`
+  const and = when
+    ? `, and ${when}`
+    : ''
+  const timing = from
+    ? `We’re starting from ${from}${and}.`
+    : when && `We ${when}.`
+  return [`${name}: ${what}.`, timing].filter(Boolean).join(' ')
 }
 
 export interface BriefIssue {
-  field: 'kinds' | 'deadline' | 'problem' | 'name' | 'email'
+  field: 'kinds' | 'start' | 'launch' | 'deadline' | 'problem' | 'name' | 'email'
   message: string
 }
 
@@ -215,6 +223,10 @@ export function stepIssue(step: number, answers: BriefAnswers, today: string): B
         ? null
         : { field: 'kinds', message: 'Choose at least one thing you’re building.' }
     case 2:
+      if (!answers.start)
+        return { field: 'start', message: 'Choose where you’re starting from.' }
+      if (!answers.launch)
+        return { field: 'launch', message: 'Choose when it should launch.' }
       return answers.deadline && answers.deadline < today
         ? { field: 'deadline', message: 'Pick a deadline from today onwards.' }
         : null

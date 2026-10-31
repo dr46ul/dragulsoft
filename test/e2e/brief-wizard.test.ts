@@ -41,6 +41,11 @@ function stepHeading(page: Page, name: string) {
   return page.getByRole('dialog').getByRole('heading', { level: 3, name })
 }
 
+async function chooseTiming(dialog: Locator) {
+  await dialog.getByRole('radio', { name: 'Just an idea' }).click()
+  await dialog.getByRole('radio', { name: 'No fixed date' }).click()
+}
+
 async function next(page: Page, heading: string) {
   await page.getByRole('button', { name: 'Next' }).click()
   await stepHeading(page, heading).waitFor()
@@ -102,6 +107,7 @@ describe.each([
     await dialog.getByRole('checkbox', { name: 'Admin panel' }).click()
     await next(page, 'Connections')
     await next(page, 'Timing & budget')
+    await chooseTiming(dialog)
     await dialog.getByRole('radio', { name: '€5–15k' }).click()
     await next(page, 'The problem')
     await dialog.getByRole('textbox', { name: 'What problem should this solve?' }).fill('Orders are re-typed into three spreadsheets.')
@@ -121,6 +127,7 @@ describe.each([
             { feature: 'admin', priority: 'must' },
           ],
         },
+        timing: { start: 'idea', launch: 'open' },
         budget: { currency: 'EUR', band: '5-15k' },
         source: 'hero',
       }),
@@ -138,6 +145,7 @@ describe('brief wizard when Adam cannot be reached', () => {
     await dialog.getByRole('checkbox', { name: 'Website' }).click()
     await next(page, 'Connections')
     await next(page, 'Timing & budget')
+    await chooseTiming(dialog)
     await next(page, 'The problem')
     await dialog.getByRole('textbox', { name: 'What problem should this solve?' }).fill('Nobody can find our opening hours.')
     await next(page, 'Done & readiness')
@@ -186,6 +194,10 @@ describe('brief wizard by keyboard', () => {
     await tabTo(page, 'Next')
     await page.keyboard.press('Enter')
     await stepHeading(page, 'Timing & budget').waitFor()
+    await tabTo(page, 'Just an idea')
+    await page.keyboard.press('Space')
+    await tabTo(page, 'As soon as possible')
+    await page.keyboard.press('Space')
     await tabTo(page, 'Next')
     await page.keyboard.press('Enter')
     await stepHeading(page, 'The problem').waitFor()
@@ -211,6 +223,7 @@ describe('brief wizard by keyboard', () => {
           kinds: ['site'],
           features: [],
         },
+        timing: { start: 'idea', launch: 'asap' },
       }),
     ])
     await page.close()
@@ -250,10 +263,13 @@ describe.each([360, 390])('brief wizard on a %ipx phone', (width) => {
     await dialog.getByRole('checkbox', { name: 'Dashboards & reports' }).click()
     expect(await overflowsSideways(page)).toBe(false)
 
-    for (const heading of ['Connections', 'Timing & budget', 'The problem']) {
+    for (const heading of ['Connections', 'Timing & budget']) {
       await next(page, heading)
       expect(await overflowsSideways(page)).toBe(false)
     }
+    await chooseTiming(dialog)
+    await next(page, 'The problem')
+    expect(await overflowsSideways(page)).toBe(false)
     await dialog.getByRole('textbox', { name: 'What problem should this solve?' }).fill('Nobody can find our opening hours.')
     for (const heading of ['Done & readiness', 'Your details']) {
       await next(page, heading)
