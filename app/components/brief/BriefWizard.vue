@@ -15,6 +15,7 @@ const attempted = ref(false)
 // Under reduced motion the step swaps without CSS, so nothing waits on a transition that never runs.
 const fades = ref(false)
 
+// The en-CA locale formats dates as YYYY-MM-DD, the visitor's local date in the shape a date input uses.
 const today = () => new Date().toLocaleDateString('en-CA')
 const issue = computed(() => attempted.value
   ? stepIssue(step.value, answers.value, today())
@@ -44,8 +45,13 @@ watch(() => enquiry.open.value, (open) => {
 
 function onClose() {
   enquiry.close()
-  if (state.value === 'sent')
-    state.value = 'editing'
+  state.value = 'editing'
+}
+
+// A send in flight would otherwise finish into a closed dialog and reopen on its outcome.
+function onCancel(event: Event) {
+  if (state.value === 'sending')
+    event.preventDefault()
 }
 
 function next() {
@@ -88,7 +94,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <dialog ref="dialog" class="modal" aria-labelledby="brief-title" @close="onClose">
+  <dialog ref="dialog" class="modal" aria-labelledby="brief-title" @close="onClose" @cancel="onCancel">
     <div
       class="modal-box flex flex-col gap-5 rounded-box border-[1.5px] border-secondary/55 bg-base-200 p-5 max-lg:size-full max-lg:max-h-none max-lg:max-w-none max-lg:rounded-none max-lg:border-0 md:p-8 lg:h-[min(52rem,calc(100svh-5rem))] lg:max-h-none lg:max-w-6xl"
     >
@@ -101,7 +107,13 @@ onMounted(() => {
             Start a project
           </h2>
         </div>
-        <button type="button" class="btn btn-square btn-ghost btn-sm" aria-label="Close" @click="dialog?.close()">
+        <button
+          :disabled="state === 'sending'"
+          type="button"
+          class="btn btn-square btn-ghost btn-sm"
+          aria-label="Close"
+          @click="dialog?.close()"
+        >
           <Icon name="solar:close-circle-linear" class="size-5" />
         </button>
       </div>

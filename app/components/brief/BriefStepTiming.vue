@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { BriefIssue } from '~/utils/brief'
-import { currencies } from '@dragulsoft/adam-protocol'
-import { BANDS, LAUNCHES, STARTS } from '~/data/brief'
+import { bands, currencies } from '@dragulsoft/adam-protocol'
+import { LAUNCHES, STARTS } from '~/data/brief'
 import { budgetLabel } from '~/utils/brief'
 
 defineProps<{ issue: BriefIssue | null, today: string }>()
 
 const { answers } = useBrief()
-const bands = computed(() => BANDS.map(band => ({
+const bandOptions = computed(() => bands.map(band => ({
   value: band,
   label: budgetLabel(answers.value.currency, band),
 })))
@@ -68,7 +68,7 @@ const deadlineIssueId = useId()
       </div>
       <div class="flex flex-wrap gap-2">
         <input
-          v-for="band in bands"
+          v-for="band in bandOptions"
           :key="band.value"
           v-model="answers.band"
           :value="band.value"

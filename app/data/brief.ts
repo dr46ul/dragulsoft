@@ -1,6 +1,5 @@
 import type {
   Audience,
-  Band,
   Constraint,
   Currency,
   DataSource,
@@ -67,14 +66,6 @@ export const LAUNCHES = [
 ] as const satisfies readonly { value: Launch, label: string, text: string }[]
 
 export const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£' } as const satisfies Record<Currency, string>
-
-export const BANDS = [
-  'under-5k',
-  '5-15k',
-  '15-40k',
-  '40k-plus',
-  'unsure',
-] as const satisfies readonly Band[]
 
 export const AUDIENCES = [
   { value: 'customers', label: 'Our customers' },

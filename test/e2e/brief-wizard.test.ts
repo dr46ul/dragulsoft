@@ -1,4 +1,5 @@
 import type { Locator, Page } from 'playwright-core'
+import { ENQUIRY_PATH } from '@dragulsoft/adam-protocol'
 import { createPage } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
 import { setupApp } from './setup'
@@ -7,7 +8,7 @@ await setupApp()
 
 const desktop = { width: 1440, height: 900 }
 const phone = { width: 390, height: 844 }
-const intake = 'https://adam.dragulsoft.dev/api/enquiries'
+const intake = `https://adam.dragulsoft.dev${ENQUIRY_PATH}`
 const cors = {
   'access-control-allow-origin': '*',
   'access-control-allow-headers': 'content-type',
@@ -124,6 +125,30 @@ describe.each([
         source: 'hero',
       }),
     ])
+    await page.close()
+  })
+})
+
+describe('brief wizard when Adam cannot be reached', () => {
+  it('says the brief could not be sent and keeps the answers', async () => {
+    const page = await createPage('/', { viewport: desktop, reducedMotion: 'reduce' })
+    await page.route(intake, route => route.abort('failed'))
+
+    const dialog = await openFromHero(page)
+    await dialog.getByRole('checkbox', { name: 'Website' }).click()
+    await next(page, 'Connections')
+    await next(page, 'Timing & budget')
+    await next(page, 'The problem')
+    await dialog.getByRole('textbox', { name: 'What problem should this solve?' }).fill('Nobody can find our opening hours.')
+    await next(page, 'Done & readiness')
+    await next(page, 'Your details')
+    await dialog.getByRole('textbox', { name: 'Your name' }).fill('Ana')
+    await dialog.getByRole('textbox', { name: 'Email' }).fill('ana@example.com')
+    await dialog.getByRole('button', { name: 'Send brief' }).click()
+
+    await dialog.getByText('Your brief couldn’t be sent. Your answers are still here.').waitFor()
+    expect(await dialog.getByRole('textbox', { name: 'Email' }).inputValue()).toBe('ana@example.com')
+    expect(await dialog.getByRole('button', { name: 'Try again' }).isVisible()).toBe(true)
     await page.close()
   })
 })

@@ -243,5 +243,42 @@ describe('brief wizard', () => {
       expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy()
       expect(screen.getByRole<HTMLInputElement>('textbox', { name: 'Email' }).value).toBe('ana@example.com')
     })
+
+    it('reopens without the error once a failed send is closed', async () => {
+      registerEndpoint(ENQUIRY_PATH, {
+        method: 'POST',
+        once: true,
+        handler: (event) => {
+          setResponseStatus(event, 503)
+          return { error: 'unavailable' }
+        },
+      })
+      await fillAndSend()
+      await screen.findByRole('alert')
+
+      await user.click(screen.getByRole('button', { name: 'Close' }))
+      useEnquiry().start('nav')
+
+      await stepHeading('Your details')
+      expect(screen.queryByRole('alert')).toBeNull()
+      expect(screen.getByRole('button', { name: 'Send brief' })).toBeTruthy()
+    })
+
+    it('cannot be closed while the brief is sending', async () => {
+      let answer = () => {}
+      registerEndpoint(ENQUIRY_PATH, {
+        method: 'POST',
+        once: true,
+        handler: () => new Promise<{ id: string }>((resolve) => {
+          answer = () => resolve({ id: 'enquiry-1' })
+        }),
+      })
+
+      await fillAndSend()
+
+      await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Close' }).disabled).toBe(true))
+      answer()
+      expect((await screen.findByRole('status')).textContent).toContain('Your brief is in.')
+    })
   })
 })

@@ -54,6 +54,7 @@ export function blankAnswers(): BriefAnswers {
   return {
     kinds: [],
     features: [],
+    // Features start as must-haves, as the spec asks; the client marks the extras that can wait.
     priorities: {
       auth: 'must',
       dashboard: 'must',
@@ -99,38 +100,44 @@ export function blankAnswers(): BriefAnswers {
   }
 }
 
-function text(value: string) {
+function optionalText(value: string) {
   return value.trim() || undefined
 }
 
+function chosenKinds(answers: BriefAnswers) {
+  return KINDS.filter(kind => answers.kinds.includes(kind.value))
+}
+
+function featuresOf(kind: Kind, answers: BriefAnswers) {
+  return featuresByKind[kind].filter(feature => answers.features.includes(feature))
+}
+
 export function chosenFeatures(answers: BriefAnswers) {
-  return KINDS
-    .filter(kind => answers.kinds.includes(kind.value))
-    .flatMap(kind => featuresByKind[kind.value].filter(feature => answers.features.includes(feature)))
+  return chosenKinds(answers).flatMap(kind => featuresOf(kind.value, answers))
 }
 
 function choicesWithOther<T>(choices: T[], otherAnswer: string) {
-  const other = text(otherAnswer)
+  const other = optionalText(otherAnswer)
   return choices.length || other
     ? { choices, other }
     : undefined
 }
 
 export function toEnquiry(answers: BriefAnswers, source: Source): Enquiry {
-  const systemsOther = text(answers.systemsOther)
-  const dataOther = text(answers.dataOther)
-  const todayOther = text(answers.todayOther)
+  const systemsOther = optionalText(answers.systemsOther)
+  const dataOther = optionalText(answers.dataOther)
+  const todayOther = optionalText(answers.todayOther)
   return {
     contact: {
       name: answers.name.trim(),
       email: answers.email.trim(),
-      company: text(answers.company),
-      projectName: text(answers.projectName),
+      company: optionalText(answers.company),
+      projectName: optionalText(answers.projectName),
     },
     scope: {
-      kinds: KINDS.filter(kind => answers.kinds.includes(kind.value)).map(kind => kind.value),
+      kinds: chosenKinds(answers).map(kind => kind.value),
       features: chosenFeatures(answers).map(feature => ({ feature, priority: answers.priorities[feature] })),
-      other: text(answers.scopeOther),
+      other: optionalText(answers.scopeOther),
     },
     connections: answers.systems.length || systemsOther || answers.data || dataOther
       ? {
@@ -178,10 +185,8 @@ function list(items: readonly string[]) {
 }
 
 export function composeBrief(answers: BriefAnswers) {
-  const parts = KINDS.filter(kind => answers.kinds.includes(kind.value)).map((kind) => {
-    const chosen = featuresByKind[kind.value]
-      .filter(feature => answers.features.includes(feature))
-      .map(feature => FEATURE_LABELS[feature].toLowerCase())
+  const parts = chosenKinds(answers).map((kind) => {
+    const chosen = featuresOf(kind.value, answers).map(feature => FEATURE_LABELS[feature].toLowerCase())
     return chosen.length
       ? `${kind.noun} with ${list(chosen)}`
       : kind.noun

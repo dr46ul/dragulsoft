@@ -26,7 +26,7 @@ const chosenKinds = computed(() => KINDS.filter(kind => answers.value.kinds.incl
       <p v-if="!chosenKinds.length" class="text-sm text-base-content/60">
         Choose what you’re building first, and its features appear here.
       </p>
-      <div v-for="kind in chosenKinds" :key="kind.value" class="rounded-box border border-secondary/35 p-3">
+      <div v-for="kind in chosenKinds" :key="kind.value" class="card card-border border-secondary/35 p-3">
         <p class="mb-2 eyebrow text-[0.6rem] text-base-content/55">
           {{ kind.label }}
         </p>
