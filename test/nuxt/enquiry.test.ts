@@ -1,3 +1,4 @@
+import type { EnquiryPrefill } from '~/composables/useEnquiry'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { clearNuxtState } from '#imports'
 import { useEnquiry } from '~/composables/useEnquiry'
@@ -18,9 +19,9 @@ describe('enquiry entry point', () => {
 
   it('opens on start, recording the source and prefill', () => {
     const enquiry = useEnquiry()
-    const prefill = {
-      scope: ['app', 'ai'],
-      timing: 'Within a quarter',
+    const prefill: EnquiryPrefill = {
+      kinds: ['app', 'ai'],
+      launch: 'quarter',
     }
 
     enquiry.start('teaser', prefill)
@@ -42,8 +43,8 @@ describe('enquiry entry point', () => {
   it('clears the source and prefill on close', () => {
     const enquiry = useEnquiry()
     enquiry.start('teaser', {
-      scope: ['site'],
-      timing: 'No fixed date',
+      kinds: ['site'],
+      launch: 'open',
     })
 
     enquiry.close()

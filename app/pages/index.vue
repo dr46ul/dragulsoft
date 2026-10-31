@@ -38,5 +38,6 @@ useSmoothScroll()
       <CaseStudies />
     </main>
     <LandingFooter />
+    <BriefWizard />
   </div>
 </template>
