@@ -44,6 +44,8 @@ export default defineNuxtConfig({
   },
   icon: {
     clientBundle: { scan: true },
+    // Every icon is named statically, so the scan already bundles them; a server bundle adds all of Solar (11.7 MB).
+    serverBundle: false,
   },
   vite: {
     plugins: [
